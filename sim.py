@@ -81,5 +81,5 @@ class Simulator(object):
         self.buffer.to_csv("output.csv")
 
 if __name__ == "__main__":
-    sim = Simulator(3, "2021-01-01", "2021-01-31")
+    sim = Simulator(3, "2021-01-01", "2021-12-31")
     sim.main()
