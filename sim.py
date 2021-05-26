@@ -1,7 +1,8 @@
 import numpy as np
 import datetime
 
-from prior import Prior
+from prior import Prior, Params
+from buffer import Buffer
 
 class Simulator(object):
     dt_format = "%Y-%m-%d"
@@ -11,27 +12,67 @@ class Simulator(object):
         self.start_date = datetime.datetime.strptime(start_date, self.dt_format)
         self.end_date = datetime.datetime.strptime(end_date, self.dt_format)
         self.n_days = (self.end_date - self.start_date).days
+        self.products = np.array(list(Params.products.keys()))
+        self.product_idx = {}
+        for i, p in enumerate(self.products):
+            self.product_idx[p] = i
+
 
         self.prior = Prior()
+        self.buffer = Buffer()
 
     def _day_of_week_features(self, day):
         x = np.zeros(7)
         x[day] = 1.0
         return x
 
-
-    def featurize(self, day_of_week):
-        x = self._day_of_week_features(day_of_week)
+    def _product_features(self, product):
+        x = np.zeros(len(self.products))
+        x[self.product_idx[product]] = 1.0
         return x
 
+    def featurize(self, day_of_week, product, price, disp_val):
+        x_day = self._day_of_week_features(day_of_week)
+        x_product = self._product_features(product)
+        x_price = x_product*price
+
+        return np.concatenate([x_day, x_product, x_price, disp_val])
+
+    def _stringify_list(self, l):
+        s = ",".join(l)
+        return "{" + s + "}"
 
     def main(self):
 
         for t in range(self.n_days):
             day = self.start_date + datetime.timedelta(days=t)
-            x_t = self.featurize(day.weekday())
-            q = self.prior.get_quantity(x_t)
-            print(day, day.weekday())
+            # gen daily price
+            prices = {}
+            for p in self.products:
+                prices[p] = self.prior.gen_price()
+
+            for d in range(self.n_displays):
+                product_disp_set, one_hot = self.prior.gen_product_set(self.products)
+                prod_disp_val = self.prior.gen_display_prod_value(one_hot)
+                for p in product_disp_set:
+                    x_t = self.featurize(
+                        day_of_week=day.weekday(),
+                        product=p,
+                        price=prices[p],
+                        disp_val=prod_disp_val
+                    )
+                    q = self.prior.gen_quantity(x_t)
+                    self.buffer.add(
+                        (
+                            q,
+                            day,
+                            p,
+                            d,
+                            prices[p],
+                            self._stringify_list(product_disp_set)
+                        )
+                    )
+        self.buffer.to_csv("output.csv")
 
 if __name__ == "__main__":
     sim = Simulator(3, "2021-01-01", "2021-01-31")
