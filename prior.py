@@ -1,4 +1,16 @@
 import numpy as np
+from enum import Enum
+
+class DisplayLocations(Enum):
+    DELI = "deli"
+    ENTRANCE = "entrance"
+    DAIRY = "dairy"
+
+    idx_map = {
+        DELI: 0,
+        ENTRANCE: 1,
+        DAIRY: 2
+    }
 
 class Params(object):
     # [M, T, W, TH, F, Sa, Su]
@@ -30,6 +42,11 @@ class Params(object):
                 "effect": .5
             }
     }
+    displays = {
+        0: {"loc": DisplayLocations.DELI},
+        1: {"loc": DisplayLocations.ENTRANCE},
+        2: {"loc": DisplayLocations.DAIRY}
+    }
     product_cov = np.array(
         [
             [1, 0, 1.5, -0.5, -1],
@@ -47,6 +64,12 @@ class Params(object):
         [0, 1, 1],
         [1, 1, 1]
     ])
+
+    display_loc_effects = {
+        "deli": 0.25,
+        "dairy": -.5,
+        "entrance": 0.5
+    }
 
 
 
@@ -79,14 +102,18 @@ class Params(object):
         x_day = np.array(Params.day_effect)
         x_price = []
         x_product = []
+        x_disp_loc = []
         for product, prod_dta in self.products.items():
             x_price.append(prod_dta["price"])
             x_product.append(prod_dta["effect"])
         x_price = np.array(x_price)
+        for disp, disp_cfg in self.displays.items():
+            x_disp_loc.append(self.display_loc_effects[disp_cfg["loc"].value])
+        x_disp_loc = np.array(x_disp_loc)
         x_prod_cov = [1.0]
         x_disp_val = [1.0]
 
-        return np.concatenate([x_day, x_product, x_price, x_prod_cov, x_disp_val])
+        return np.concatenate([x_day, x_product, x_price, x_prod_cov, x_disp_val, x_disp_loc])
 
 
 

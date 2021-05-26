@@ -1,18 +1,19 @@
 import numpy as np
 import datetime
 
-from prior import Prior, Params
+from prior import Prior, Params, DisplayLocations
 from buffer import Buffer
 
 class Simulator(object):
     dt_format = "%Y-%m-%d"
 
-    def __init__(self, n_displays, start_date, end_date):
-        self.n_displays = n_displays
+    def __init__(self, start_date, end_date):
         self.start_date = datetime.datetime.strptime(start_date, self.dt_format)
         self.end_date = datetime.datetime.strptime(end_date, self.dt_format)
         self.n_days = (self.end_date - self.start_date).days
         self.products = np.array(list(Params.products.keys()))
+        self.n_displays = len(Params.displays)
+
         self.product_idx = {}
         for i, p in enumerate(self.products):
             self.product_idx[p] = i
@@ -30,13 +31,18 @@ class Simulator(object):
         x = np.zeros(len(self.products))
         x[self.product_idx[product]] = 1.0
         return x
+    def _disp_loc_features(self, disp_loc_type):
+        x = np.zeros(len(DisplayLocations.idx_map.value))
+        x[DisplayLocations.idx_map.value[disp_loc_type.value]] = 1.0
+        return x
 
-    def featurize(self, day_of_week, product, price, disp_prod_val, disp_val):
+    def featurize(self, day_of_week, product, price, disp_prod_val, disp_val, disp_loc_type):
         x_day = self._day_of_week_features(day_of_week)
         x_product = self._product_features(product)
         x_price = x_product*price
+        x_disp_loc = self._disp_loc_features(disp_loc_type)
 
-        return np.concatenate([x_day, x_product, x_price, disp_prod_val, [disp_val]])
+        return np.concatenate([x_day, x_product, x_price, disp_prod_val, [disp_val], x_disp_loc])
 
     def _stringify_list(self, l):
         l = [str(x) for x in l]
@@ -54,6 +60,7 @@ class Simulator(object):
 
 
             for d in range(self.n_displays):
+                disp_loc = Params.displays[d]["loc"]
                 product_disp_set, one_hot = self.prior.gen_product_set(self.products)
                 prod_disp_val = self.prior.gen_display_prod_value(one_hot)
                 disp_spatial_val = self.prior.spatial_effects[d]
@@ -63,7 +70,8 @@ class Simulator(object):
                         product=p,
                         price=prices[p],
                         disp_prod_val=prod_disp_val,
-                        disp_val=disp_spatial_val
+                        disp_val=disp_spatial_val,
+                        disp_loc_type=disp_loc
                     )
                     q, lmbda = self.prior.gen_quantity(x_t)
                     self.buffer.add(
@@ -73,6 +81,7 @@ class Simulator(object):
                             p,
                             d,
                             prices[p],
+                            disp_loc.value,
                             self._stringify_list(product_disp_set),
                             self._stringify_list(self.prior.params.disp_nbr_map[d])
 
@@ -81,5 +90,5 @@ class Simulator(object):
         self.buffer.to_csv("output.csv")
 
 if __name__ == "__main__":
-    sim = Simulator(3, "2021-01-01", "2021-12-31")
+    sim = Simulator("2021-01-01", "2021-12-31")
     sim.main()

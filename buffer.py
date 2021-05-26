@@ -10,6 +10,7 @@ class Buffer(object):
             "product",
             "display_id",
             "price",
+            "display_loc",
             "products_on_display",
             "nearby_displays"
         ]
