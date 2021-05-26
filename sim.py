@@ -31,12 +31,12 @@ class Simulator(object):
         x[self.product_idx[product]] = 1.0
         return x
 
-    def featurize(self, day_of_week, product, price, disp_val):
+    def featurize(self, day_of_week, product, price, disp_prod_val, disp_val):
         x_day = self._day_of_week_features(day_of_week)
         x_product = self._product_features(product)
         x_price = x_product*price
 
-        return np.concatenate([x_day, x_product, x_price, disp_val])
+        return np.concatenate([x_day, x_product, x_price, disp_prod_val, [disp_val]])
 
     def _stringify_list(self, l):
         s = ",".join(l)
@@ -51,17 +51,20 @@ class Simulator(object):
             for p in self.products:
                 prices[p] = self.prior.gen_price()
 
+
             for d in range(self.n_displays):
                 product_disp_set, one_hot = self.prior.gen_product_set(self.products)
                 prod_disp_val = self.prior.gen_display_prod_value(one_hot)
+                disp_spatial_val = self.prior.spatial_effects[d]
                 for p in product_disp_set:
                     x_t = self.featurize(
                         day_of_week=day.weekday(),
                         product=p,
                         price=prices[p],
-                        disp_val=prod_disp_val
+                        disp_prod_val=prod_disp_val,
+                        disp_val=disp_spatial_val
                     )
-                    q = self.prior.gen_quantity(x_t)
+                    q, lmbda = self.prior.gen_quantity(x_t)
                     self.buffer.add(
                         (
                             q,
