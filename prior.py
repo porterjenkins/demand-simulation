@@ -54,6 +54,7 @@ class Params(object):
     def __init__(self):
         self.vals = self._get_vals()
         self.deg_mtx = self._get_deg_mtx(self.adj_mtx)
+        self.disp_nbr_map = self._get_nbr_displays(self.adj_mtx)
 
     def _get_deg_mtx(self, A):
         # get D^-1/2
@@ -62,6 +63,17 @@ class Params(object):
         D = np.power(D, .5)
 
         return D
+
+    def _get_nbr_displays(self, A):
+        disp_nbr_map = {}
+        for i, row in enumerate(A):
+            disp_nbr_map[i] = []
+            for j, col in enumerate(row):
+                if i != j and col == 1:
+                    disp_nbr_map[i].append(j)
+
+        return disp_nbr_map
+
 
     def _get_vals(self):
         x_day = np.array(Params.day_effect)

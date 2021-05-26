@@ -39,6 +39,7 @@ class Simulator(object):
         return np.concatenate([x_day, x_product, x_price, disp_prod_val, [disp_val]])
 
     def _stringify_list(self, l):
+        l = [str(x) for x in l]
         s = ",".join(l)
         return "{" + s + "}"
 
@@ -72,7 +73,8 @@ class Simulator(object):
                             p,
                             d,
                             prices[p],
-                            self._stringify_list(product_disp_set)
+                            self._stringify_list(product_disp_set),
+                            self._stringify_list(self.prior.params.disp_nbr_map[d])
 
                         )
                     )
