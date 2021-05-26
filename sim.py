@@ -73,6 +73,7 @@ class Simulator(object):
                             d,
                             prices[p],
                             self._stringify_list(product_disp_set)
+
                         )
                     )
         self.buffer.to_csv("output.csv")
