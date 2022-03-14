@@ -1,10 +1,13 @@
+import gym
 import numpy as np
 import datetime
+import yaml
 
+from store import Store
 from prior import Prior, Params, DisplayLocations
 from buffer import Buffer
 
-class Simulator(object):
+class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
     def __init__(self, start_date, end_date):
@@ -88,6 +91,18 @@ class Simulator(object):
                         )
                     )
         self.buffer.to_csv("output.csv")
+
+    @classmethod
+    def build_sim(cls, cfg_path):
+        with open(cfg_path, "r") as f:
+            cfg = yaml.load(f)
+
+        store = Store(
+            adj_mtx=cfg["store"]["adj"],
+            trans_mtx=cfg["store"]["transition"],
+            names=cfg["store"]["names"]
+        )
+
 
 if __name__ == "__main__":
     sim = Simulator("2021-01-01", "2021-12-31")

@@ -26,6 +26,7 @@ https://repo.anaconda.com/pkgs/main/linux-64/ncurses-6.3-h7f8727e_2.conda
 https://repo.anaconda.com/pkgs/main/linux-64/openssl-1.1.1m-h7f8727e_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/pcre-8.45-h295c915_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/xz-5.2.5-h7b6447c_0.conda
+https://repo.anaconda.com/pkgs/main/linux-64/yaml-0.2.5-h7b6447c_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/zlib-1.2.11-h7f8727e_4.conda
 https://repo.anaconda.com/pkgs/main/linux-64/glib-2.69.1-h4ff587b_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libpng-1.6.37-hbc83047_0.conda
