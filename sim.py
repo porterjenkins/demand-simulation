@@ -95,7 +95,7 @@ class Simulator(gym.Env):
     @classmethod
     def build_sim(cls, cfg_path):
         with open(cfg_path, "r") as f:
-            cfg = yaml.load(f)
+            cfg = yaml.safe_load(f)
 
         store = Store(
             adj_mtx=cfg["store"]["adj"],
@@ -105,5 +105,7 @@ class Simulator(gym.Env):
 
 
 if __name__ == "__main__":
-    sim = Simulator("2021-01-01", "2021-12-31")
-    sim.main()
+    sim = Simulator.build_sim("cfg.yaml")
+
+    #sim = Simulator("2021-01-01", "2021-12-31")
+    #sim.main()
