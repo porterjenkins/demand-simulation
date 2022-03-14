@@ -1,5 +1,7 @@
 import numpy as np
 
+### TODO: Implement Store class ###
+
 class Store(object):
 
     def __init__(self, adj_mtx, trans_mtx, names):
