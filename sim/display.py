@@ -17,7 +17,7 @@ class InventoryProduct(object):
         if self.quantity >= 1:
             self.quantity -= 1
         else:
-            raise ValueError(f"Current quantity = {self.}")
+            raise ValueError(f"Current quantity = {self.quantity}")
 
     def restock(self, q):
         self.quantity = q
