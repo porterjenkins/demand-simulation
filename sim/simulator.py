@@ -3,9 +3,13 @@ import numpy as np
 import datetime
 import yaml
 
-from store import Store
-from prior import Prior, Params, DisplayLocations
+from sim import cfg
+
+from sim.store import Store
+from sim.prior import Prior, Params, DisplayLocations
 from buffer import Buffer
+from sim.agent import Agent
+from sim.display import CoolerDisplay
 
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
@@ -93,19 +97,35 @@ class Simulator(gym.Env):
         self.buffer.to_csv("output.csv")
 
     @classmethod
-    def build_sim(cls, cfg_path):
-        with open(cfg_path, "r") as f:
-            cfg = yaml.safe_load(f)
+    def build_sim(cls):
 
         store = Store(
-            adj_mtx=cfg["store"]["adj"],
-            trans_mtx=cfg["store"]["transition"],
-            names=cfg["store"]["names"]
+            adj_mtx=cfg.get_adj_mtx(),
+            trans_mtx=cfg.get_trans_mtx(),
+            names=cfg.get_display_names()
         )
+
+        agents = Agent.build_agents(
+            n_agents=10,
+            product_params=cfg.get_prod_weight(),
+            price_params=cfg.get_price_param(),
+            sigma=cfg.get_var_param()
+        )
+
+        display = CoolerDisplay(
+            n_slots=8,
+            max_per_slot=5,
+            products=cfg.get_products()
+        )
+
+        state_mtx = display.get_state_mtx()
+        a = agents[0]
+        product = a.action_select(state_mtx)
+        display.decrement(product)
 
 
 if __name__ == "__main__":
-    sim = Simulator.build_sim("cfg.yaml")
+    sim = Simulator.build_sim()
 
     #sim = Simulator("2021-01-01", "2021-12-31")
     #sim.main()
