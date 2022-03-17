@@ -46,8 +46,11 @@ class SimCfg(object):
     def get_trans_mtx(self):
         return np.array(self.cfg_dict["store"]["transition"])
 
-    def get_display_names(self):
-        return self.cfg_dict["store"]["display_names"]
+    def get_region_dict(self):
+        return self.cfg_dict["store"]["regions"]
+
+    def get_region_names(self):
+        return list(self.cfg_dict["store"]["regions"].keys())
 
     def get_var_param(self):
         return self.cfg_dict["params"]["sigma"]

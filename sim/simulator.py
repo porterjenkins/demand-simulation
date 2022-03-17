@@ -102,8 +102,14 @@ class Simulator(gym.Env):
         store = Store(
             adj_mtx=cfg.get_adj_mtx(),
             trans_mtx=cfg.get_trans_mtx(),
-            names=cfg.get_display_names()
+            names=cfg.get_region_names()
         )
+
+        displays = CoolerDisplay.build_displays_from_dict(
+            cfg.get_region_dict()
+        )
+        store.add_displays_to_regions(displays)
+
 
         agents = Agent.build_agents(
             n_agents=10,
@@ -112,16 +118,6 @@ class Simulator(gym.Env):
             sigma=cfg.get_var_param()
         )
 
-        display = CoolerDisplay(
-            n_slots=8,
-            max_per_slot=5,
-            products=cfg.get_products()
-        )
-
-        state_mtx = display.get_state_mtx()
-        a = agents[0]
-        product = a.action_select(state_mtx)
-        display.decrement(product)
 
 
 if __name__ == "__main__":

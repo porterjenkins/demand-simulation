@@ -1,5 +1,6 @@
 import numpy as np
 from sim import cfg
+from uuid import uuid4
 
 
 class InventoryProduct(object):
@@ -85,11 +86,17 @@ class Inventory(object):
 class CoolerDisplay(object):
 
 
-    def __init__(self, n_slots, max_per_slot, products):
+    def __init__(self, n_slots, max_per_slot, products, region, name=None):
+        self.id = uuid4()
         self.n_slots = n_slots
         self.max_per_slot = max_per_slot
         self.products = products
+        self.region = region
         self.inventory = self._get_init_inventory(n_slots, max_per_slot, products)
+        self.name = name if name else str(self.id)
+
+    def __str__(self):
+        return self.name
 
     @staticmethod
     def _get_init_inventory(n_slots, max_per_slot, products):
@@ -102,6 +109,22 @@ class CoolerDisplay(object):
     def decrement(self, product):
         self.inventory.decrement(product)
 
+
+    @classmethod
+    def build_displays_from_dict(cls, display_dict):
+        disp_list = []
+        for reg, displays in display_dict.items():
+            for disp_type, dta in displays.items():
+                display = CoolerDisplay(
+                    n_slots=dta["n_slots"],
+                    max_per_slot=dta["max_per_slot"],
+                    products=cfg.get_products(),
+                    name=f"{reg}-{disp_type}",
+                    region=reg
+                )
+                disp_list.append(display)
+
+        return disp_list
 
 
 if __name__ == "__main__":

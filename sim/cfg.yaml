@@ -10,7 +10,19 @@ store:
     - [1, 5, 2]
     - [5, 1, 5]
     - [10, 2, 1]
-  display_names: ['deli', 'dairy', 'entrance']
+  regions:
+    deli:
+      cooler:
+        n_slots: 8
+        max_per_slot: 5
+    dairy:
+      cooler:
+        n_slots: 8
+        max_per_slot: 5
+    entrance:
+      cooler:
+        n_slots: 8
+        max_per_slot: 5
 params:
   products:
     "coca_cola_20oz_bottle":
