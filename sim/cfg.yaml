@@ -1,0 +1,44 @@
+time:
+  start: 2021-01-01
+  end: 2021-12-31
+store:
+  adj:
+    - [1, 1, 0]
+    - [1, 1, 1]
+    - [0, 1, 1]
+  transition:
+    - [1, 5, 2]
+    - [5, 1, 5]
+    - [10, 2, 1]
+  regions:
+    deli:
+      cooler:
+        n_slots: 8
+        max_per_slot: 5
+    dairy:
+      cooler:
+        n_slots: 8
+        max_per_slot: 5
+    entrance:
+      cooler:
+        n_slots: 8
+        max_per_slot: 5
+params:
+  products:
+    "coca_cola_20oz_bottle":
+      weight: 1.5
+      price: 1.99
+    "dr_pepper_20oz_bottle":
+      weight: 1.25
+      price: .99
+    "diet_coke_20oz_bottle":
+      weight: 1.0
+      price: 1.99
+    "sprite_20oz_bottle":
+      weight: 0.5
+      price: 1.99
+    "Monster_16oz_can":
+      weight: 1.75
+      price: 2.99
+  price: -1.1
+  sigma: 0.5

@@ -1,0 +1,3 @@
+
+class Product(object):
+    pass

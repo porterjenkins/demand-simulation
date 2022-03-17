@@ -124,7 +124,7 @@ class Params(object):
 class Prior(object):
 
     price_shape = 10
-    price_scale = 0.5
+    price_scale = 1.0
     product_display_prob = 0.6
 
     def __init__(self):
@@ -151,6 +151,37 @@ class Prior(object):
         )
         return prod_cov_val.flatten()
 
+    @staticmethod
+    def gen_ind_params(glob_params, prod_sigma, n_agents):
+        num_params = glob_params.shape[0]
+        num_prods = num_params-1
+        ind_params = np.zeros((n_agents, num_params))
+
+        prod_weights = np.random.multivariate_normal(
+            glob_params[:num_prods],
+            np.eye(num_prods)*prod_sigma,
+            n_agents
+        )
+
+        ind_params[:, :num_prods] = prod_weights
+
+        price_params = Prior.gen_price_param(
+            shape=glob_params[-1],
+            n=n_agents
+        )
+        ind_params[:, -1] = price_params
+
+        return ind_params
+
+    @staticmethod
+    def gen_price_param(shape, n):
+
+        shape = -1*shape
+        scale = Prior.price_scale
+
+        params = np.random.gamma(shape, scale, size=n)
+        return -1*params
+
 
     def get_display_spatial_effects(self):
         D = self.params.deg_mtx
@@ -159,3 +190,17 @@ class Prior(object):
         Z = np.dot(np.dot(np.dot(D, A),D), X)
         return Z
 
+
+    @staticmethod
+    def vectorize_params(product_params, price_params):
+        n = len(product_params) + 1
+        param_vec = np.zeros(n)
+
+        i = 0
+        for v in product_params:
+            param_vec[i] = float(v)
+            i += 1
+
+        param_vec[i] = float(price_params)
+
+        return param_vec
