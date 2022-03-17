@@ -14,10 +14,15 @@ from sim.display import CoolerDisplay
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
-    def __init__(self, start_date, end_date):
-        self.start_date = datetime.datetime.strptime(start_date, self.dt_format)
-        self.end_date = datetime.datetime.strptime(end_date, self.dt_format)
+    def __init__(self, start_date, end_date, store):
+        #self.start_date = datetime.datetime.strptime(start_date, self.dt_format)
+        #self.end_date = datetime.datetime.strptime(end_date, self.dt_format)
+        self.start_date = start_date
+        self.end_date = end_date
+
         self.n_days = (self.end_date - self.start_date).days
+        self.store = store
+
         self.products = np.array(list(Params.products.keys()))
         self.n_displays = len(Params.displays)
 
@@ -60,40 +65,22 @@ class Simulator(gym.Env):
 
         for t in range(self.n_days):
             day = self.start_date + datetime.timedelta(days=t)
-            # gen daily price
-            prices = {}
-            for p in self.products:
-                prices[p] = self.prior.gen_price()
 
+            # TODO: Insert simulation logic here
 
-            for d in range(self.n_displays):
-                disp_loc = Params.displays[d]["loc"]
-                product_disp_set, one_hot = self.prior.gen_product_set(self.products)
-                prod_disp_val = self.prior.gen_display_prod_value(one_hot)
-                disp_spatial_val = self.prior.spatial_effects[d]
-                for p in product_disp_set:
-                    x_t = self.featurize(
-                        day_of_week=day.weekday(),
-                        product=p,
-                        price=prices[p],
-                        disp_prod_val=prod_disp_val,
-                        disp_val=disp_spatial_val,
-                        disp_loc_type=disp_loc
-                    )
-                    q, lmbda = self.prior.gen_quantity(x_t)
-                    self.buffer.add(
-                        (
-                            q,
-                            day,
-                            p,
-                            d,
-                            prices[p],
-                            disp_loc.value,
-                            self._stringify_list(product_disp_set),
-                            self._stringify_list(self.prior.params.disp_nbr_map[d])
+            """self.buffer.add(
+                (
+                    q,
+                    day,
+                    p,
+                    d,
+                    prices[p],
+                    disp_loc.value,
+                    self._stringify_list(product_disp_set),
+                    self._stringify_list(self.prior.params.disp_nbr_map[d])
 
-                        )
-                    )
+                )
+            )"""
         self.buffer.to_csv("output.csv")
 
     @classmethod
@@ -118,10 +105,17 @@ class Simulator(gym.Env):
             sigma=cfg.get_var_param()
         )
 
+        sim = Simulator(
+            start_date=cfg.get_start_time(),
+            end_date=cfg.get_end_time(),
+            store=store
+        )
+
+        return sim
+
 
 
 if __name__ == "__main__":
     sim = Simulator.build_sim()
 
-    #sim = Simulator("2021-01-01", "2021-12-31")
     #sim.main()

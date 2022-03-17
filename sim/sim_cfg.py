@@ -54,3 +54,12 @@ class SimCfg(object):
 
     def get_var_param(self):
         return self.cfg_dict["params"]["sigma"]
+
+    def get_time(self):
+        return self.cfg_dict["time"]
+
+    def get_start_time(self):
+        return self.cfg_dict["time"]["start"]
+
+    def get_end_time(self):
+        return self.cfg_dict["time"]["end"]
