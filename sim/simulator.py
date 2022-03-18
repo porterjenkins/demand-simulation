@@ -97,13 +97,10 @@ class Simulator(gym.Env):
         )
         store.add_displays_to_regions(displays)
 
+        ts = cfg.get_start_time()
+        agents = Agent.gen_agents(ts)
 
-        agents = Agent.build_agents(
-            n_agents=10,
-            product_params=cfg.get_prod_weight(),
-            price_params=cfg.get_price_param(),
-            sigma=cfg.get_var_param()
-        )
+        store.get_enter_agents(agents)
 
         sim = Simulator(
             start_date=cfg.get_start_time(),

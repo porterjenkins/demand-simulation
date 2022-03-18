@@ -5,6 +5,7 @@ from sim import cfg
 from prior import Prior
 from sim_utils import softmax
 from uuid import uuid4
+import names
 
 class Agent(object):
 
@@ -25,9 +26,10 @@ class Agent(object):
     def __init__(self, params):
         self.params = params
         self.id = uuid4()
+        self.name = names.get_full_name()
 
     def __str__(self):
-        return str(self.id)
+        return str(self.name)
 
     def action_select(self, state_mtx):
         """
@@ -35,7 +37,7 @@ class Agent(object):
         :param state_mtx: n x (n x 1), where n is the number of products
         :return:
         """
-        names = cfg.get_products()
+        p_names = cfg.get_products()
         logits = state_mtx @ self.params
         probs = softmax(logits)
         choice = np.random.choice(
@@ -44,7 +46,7 @@ class Agent(object):
             p=probs
         )
 
-        choice = names[choice[0]]
+        choice = p_names[choice[0]]
         return choice
 
     def action_move(self):

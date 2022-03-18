@@ -10,12 +10,20 @@ class SimCfg(object):
 
         self.prod2idx = {}
         self.idx2prod = {}
+        self.reg2idx = {}
+        self.idx2reg = {}
+
         i = 0
         for p, prod_dict in self.cfg_dict["params"]["products"].items():
             self.prod2idx[p] = i
             self.idx2prod[i] = p
             i += 1
 
+        i = 0
+        for r, reg_dict in self.cfg_dict["store"]["regions"].items():
+            self.reg2idx[r] = i
+            self.idx2reg[i] = r
+            i += 1
 
     def get_products(self):
         products = []

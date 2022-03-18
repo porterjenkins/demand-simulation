@@ -1,7 +1,8 @@
+from sim import cfg
 import numpy as np
 
 class Region(object):
-    def __init__(self, name, trans_probs, displays=[], is_entrance=False):
+    def __init__(self, name, trans_probs, idx, displays=[], is_entrance=False):
         self.name = name
         self.trans_probs = trans_probs
         self.displays = displays
@@ -13,6 +14,9 @@ class Region(object):
 
     def add_display(self, disp):
         self.displays.append(disp)
+
+    def add_agent(self, agent):
+        self.agents.append(agent)
 
 class Store(object):
 
@@ -39,10 +43,12 @@ class Store(object):
             if is_entrance:
                 self.ent_reg = name
 
+            r_idx = cfg.reg2idx[name]
             reg = Region(
                 name=name,
-                trans_probs=self.trans_mtx[i, :],
-                is_entrance=is_entrance
+                trans_probs=self.trans_mtx[r_idx, :],
+                is_entrance=is_entrance,
+                idx=r_idx
             )
             regions[name] = reg
             i += 1
@@ -59,6 +65,8 @@ class Store(object):
         :param agents: List[Agent]
         :return: None
         """
+        for a in agents:
+            self.regions[self.ent_reg].add_agent(a)
 
 
 
