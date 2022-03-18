@@ -7,6 +7,21 @@ from sim_utils import softmax
 from uuid import uuid4
 
 class Agent(object):
+
+    weekday_params = {
+        "a": 2.8,
+        "b": 2.4,
+        "c": 1.0,
+        "d": 5.0
+    }
+
+    weekend_params = {
+        "a": 2.8,
+        "b": 2.4,
+        "c": 1.0,
+        "d": 10.0
+    }
+
     def __init__(self, params):
         self.params = params
         self.id = uuid4()
@@ -53,3 +68,79 @@ class Agent(object):
             agents.append(agent)
 
         return agents
+
+    @classmethod
+    def get_sinx(cls, x, a, b, c, d):
+        """
+
+        :param x: domain
+        :param a: x-scaler
+        :param b: shift x
+        :param c: shift y
+        :param d: y-scaler
+        :return:
+        """
+        sin_x = np.sin(x / a + b) * d + c
+
+        return sin_x
+
+    @classmethod
+    def get_temporal_lambda(cls, x, sin_x):
+        fx = np.zeros_like(sin_x)
+        for xi in x:
+            if xi < 6:
+                fx[xi] = 0
+            else:
+                fx[xi] = max(0, sin_x[xi])
+        return fx
+
+
+    @classmethod
+    def gen_agents(cls, ts):
+        """
+
+        :param ts: (Datetime) time stamp
+        :return: List[Agent] list of agent objects
+        """
+
+        day_of_week = ts.weekday()
+        hour = ts.hour
+        x = np.arange(24)
+
+        if day_of_week < 5:
+            sinx = cls.get_sinx(
+                x=x,
+                a=cls.weekday_params["a"],
+                b=cls.weekday_params["b"],
+                c=cls.weekday_params["c"],
+                d=cls.weekday_params["d"]
+            )
+        else:
+            sinx = cls.get_sinx(
+                x=x,
+                a=cls.weekend_params["a"],
+                b=cls.weekend_params["b"],
+                c=cls.weekend_params["c"],
+                d=cls.weekend_params["d"]
+            )
+
+        lmbda = cls.get_temporal_lambda(x, sinx)
+        n_agents = np.random.poisson(lmbda[hour])
+
+        agents = Agent.build_agents(
+            n_agents=n_agents,
+            product_params=cfg.get_prod_weight(),
+            price_params=cfg.get_price_param(),
+            sigma=cfg.get_var_param()
+        )
+
+        return agents
+
+
+
+
+if __name__ == "__main__":
+    import datetime
+    ts = datetime.datetime.now()
+
+    agents = Agent.gen_agents(ts)
