@@ -89,7 +89,7 @@ class Simulator(gym.Env):
         store = Store(
             adj_mtx=cfg.get_adj_mtx(),
             trans_mtx=cfg.get_trans_mtx(),
-            names=cfg.get_region_names()
+            region_dict=cfg.get_region_dict()
         )
 
         displays = CoolerDisplay.build_displays_from_dict(

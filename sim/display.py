@@ -111,10 +111,10 @@ class CoolerDisplay(object):
 
 
     @classmethod
-    def build_displays_from_dict(cls, display_dict):
+    def build_displays_from_dict(cls, reg_dict):
         disp_list = []
-        for reg, displays in display_dict.items():
-            for disp_type, dta in displays.items():
+        for reg, reg_data in reg_dict.items():
+            for disp_type, dta in reg_data["displays"].items():
                 display = CoolerDisplay(
                     n_slots=dta["n_slots"],
                     max_per_slot=dta["max_per_slot"],

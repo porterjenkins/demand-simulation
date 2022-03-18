@@ -1,11 +1,12 @@
 import numpy as np
 
 class Region(object):
-    def __init__(self, name, trans_probs, displays=[]):
+    def __init__(self, name, trans_probs, displays=[], is_entrance=False):
         self.name = name
         self.trans_probs = trans_probs
-        self.displays = []
+        self.displays = displays
         self.agents = []
+        self.is_entrance = is_entrance
 
     def __str__(self):
         return self.name
@@ -15,34 +16,50 @@ class Region(object):
 
 class Store(object):
 
-    def __init__(self, adj_mtx, trans_mtx, names):
+    def __init__(self, adj_mtx, trans_mtx, region_dict):
         self.adj_mtx = np.array(adj_mtx)
         self.trans_mtx = np.array(trans_mtx)
-        self.names = names
+        self.names = list(region_dict.keys())
         self.trans_mtx = self.norm_trans_mtx(self.adj_mtx, self.trans_mtx)
+        self.ent_reg = None
+        self.regions = self.build_regions(region_dict)
 
-        self.regions = self.build_regions()
 
 
-    def build_regions(self):
+    def build_regions(self, region_dict):
         """
 
-        :return: (dict) regions dict with name as key
+        :return: (dict) regions dict with name as key, Region object as value
         """
 
         regions = {}
-        for i, name in enumerate(self.names):
+        i = 0
+        for name, r_data in region_dict.items():
+            is_entrance = r_data.get("is_entrance", False)
+            if is_entrance:
+                self.ent_reg = name
+
             reg = Region(
                 name=name,
-                trans_probs=self.trans_mtx[i, :]
+                trans_probs=self.trans_mtx[i, :],
+                is_entrance=is_entrance
             )
             regions[name] = reg
+            i += 1
 
         return regions
 
     def add_displays_to_regions(self, disp_list):
         for disp in disp_list:
             self.regions[disp.region].add_display(disp)
+
+    def get_enter_agents(self, agents):
+        """
+
+        :param agents: List[Agent]
+        :return: None
+        """
+
 
 
 
