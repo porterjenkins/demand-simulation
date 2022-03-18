@@ -6,7 +6,7 @@ class Region(object):
         self.name = name
         self.trans_probs = trans_probs
         self.displays = displays
-        self.agents = []
+        self.idx = idx
         self.is_entrance = is_entrance
 
     def __str__(self):
@@ -15,8 +15,6 @@ class Region(object):
     def add_display(self, disp):
         self.displays.append(disp)
 
-    def add_agent(self, agent):
-        self.agents.append(agent)
 
 class Store(object):
 
@@ -27,6 +25,7 @@ class Store(object):
         self.trans_mtx = self.norm_trans_mtx(self.adj_mtx, self.trans_mtx)
         self.ent_reg = None
         self.regions = self.build_regions(region_dict)
+        self.agents = {}
 
 
 
@@ -59,15 +58,28 @@ class Store(object):
         for disp in disp_list:
             self.regions[disp.region].add_display(disp)
 
+    def add_agent(self, agent):
+        self.agents[agent.name] = agent
+
     def get_enter_agents(self, agents):
         """
 
         :param agents: List[Agent]
-        :return: None
-        """
-        for a in agents:
-            self.regions[self.ent_reg].add_agent(a)
+        :return: None"""
 
+        for name, a in agents.items():
+            a.update_loc(self.ent_reg)
+            self.add_agent(a)
+
+
+
+    def print_state(self):
+        reg_cntr = dict(zip(list(self.regions.keys()), [0]*len(self.regions)))
+        for a_name, a in self.agents.items():
+            reg_cntr[a.curr_loc] += 1
+        for reg, cnt in reg_cntr.items():
+            bar = "".join(["X"]*cnt)
+            print(f"\t{reg}: {bar}")
 
 
 

@@ -14,24 +14,16 @@ from sim.display import CoolerDisplay
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
-    def __init__(self, start_date, end_date, store):
-        #self.start_date = datetime.datetime.strptime(start_date, self.dt_format)
-        #self.end_date = datetime.datetime.strptime(end_date, self.dt_format)
-        self.start_date = start_date
-        self.end_date = end_date
+    def __init__(self, start_dt, end_dt, store):
 
-        self.n_days = (self.end_date - self.start_date).days
+        self.start_dt = start_dt
+        self.end_dt = end_dt
         self.store = store
-
-        self.products = np.array(list(Params.products.keys()))
-        self.n_displays = len(Params.displays)
-
-        self.product_idx = {}
-        for i, p in enumerate(self.products):
-            self.product_idx[p] = i
+        self.timedelta = datetime.timedelta(
+            hours=cfg.get_timedelta()
+        )
 
 
-        self.prior = Prior()
         self.buffer = Buffer()
 
     def _day_of_week_features(self, day):
@@ -39,32 +31,28 @@ class Simulator(gym.Env):
         x[day] = 1.0
         return x
 
-    def _product_features(self, product):
-        x = np.zeros(len(self.products))
-        x[self.product_idx[product]] = 1.0
-        return x
-    def _disp_loc_features(self, disp_loc_type):
-        x = np.zeros(len(DisplayLocations.idx_map.value))
-        x[DisplayLocations.idx_map.value[disp_loc_type.value]] = 1.0
-        return x
-
-    def featurize(self, day_of_week, product, price, disp_prod_val, disp_val, disp_loc_type):
-        x_day = self._day_of_week_features(day_of_week)
-        x_product = self._product_features(product)
-        x_price = x_product*price
-        x_disp_loc = self._disp_loc_features(disp_loc_type)
-
-        return np.concatenate([x_day, x_product, x_price, disp_prod_val, [disp_val], x_disp_loc])
 
     def _stringify_list(self, l):
         l = [str(x) for x in l]
         s = ",".join(l)
         return "{" + s + "}"
 
-    def main(self):
+    def step(self, action=None):
+        # TODO
+        for a_name, agent in self.store.agents.items():
+            probs = self.store.regions[agent.curr_loc].trans_probs
+            agent.action_move(probs)
 
-        for t in range(self.n_days):
-            day = self.start_date + datetime.timedelta(days=t)
+
+    def main(self, recommender=None):
+        curr_time = self.start_dt
+        step_cntr = 0
+        while curr_time < self.end_dt:
+
+            print(f"Simulating step: {step_cntr}, {curr_time}")
+            self.store.print_state()
+            self.step()
+
 
             # TODO: Insert simulation logic here
 
@@ -81,7 +69,10 @@ class Simulator(gym.Env):
 
                 )
             )"""
-        self.buffer.to_csv("output.csv")
+
+            curr_time += self.timedelta
+            step_cntr += 1
+        #self.buffer.to_csv("output.csv")
 
     @classmethod
     def build_sim(cls):
@@ -103,8 +94,8 @@ class Simulator(gym.Env):
         store.get_enter_agents(agents)
 
         sim = Simulator(
-            start_date=cfg.get_start_time(),
-            end_date=cfg.get_end_time(),
+            start_dt=cfg.get_start_time(),
+            end_dt=cfg.get_end_time(),
             store=store
         )
 
@@ -115,4 +106,4 @@ class Simulator(gym.Env):
 if __name__ == "__main__":
     sim = Simulator.build_sim()
 
-    #sim.main()
+    sim.main()

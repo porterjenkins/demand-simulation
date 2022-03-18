@@ -71,3 +71,7 @@ class SimCfg(object):
 
     def get_end_time(self):
         return self.cfg_dict["time"]["end"]
+
+    def get_timedelta(self):
+        td_dict = self.cfg_dict["time"]["timedelta"]
+        return td_dict["resolution"]

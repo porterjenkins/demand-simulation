@@ -27,6 +27,7 @@ class Agent(object):
         self.params = params
         self.id = uuid4()
         self.name = names.get_full_name()
+        self.curr_loc = None
 
     def __str__(self):
         return str(self.name)
@@ -49,8 +50,21 @@ class Agent(object):
         choice = p_names[choice[0]]
         return choice
 
-    def action_move(self):
-        pass
+    def update_loc(self, loc):
+        self.curr_loc = loc
+
+    def action_move(self, trans_probs):
+        new_loc = self.gen_new_loc(trans_probs)
+        self.update_loc(new_loc)
+
+    def gen_new_loc(self, trans_probs):
+        idx = np.random.choice(
+            np.arange(trans_probs.shape[0]),
+            p=trans_probs,
+            size=1
+        )[0]
+
+        return cfg.idx2reg[idx]
 
 
     @classmethod
@@ -63,13 +77,13 @@ class Agent(object):
     ):
         glob_params = Prior.vectorize_params(product_params, price_params)
         ind_params = Prior.gen_ind_params(glob_params, sigma, n_agents)
-
-        agents = []
+        agents = {}
         for p in ind_params:
             agent = Agent(p)
-            agents.append(agent)
+            agents[agent.name] = agent
 
         return agents
+
 
     @classmethod
     def get_sinx(cls, x, a, b, c, d):
@@ -137,6 +151,7 @@ class Agent(object):
         )
 
         return agents
+
 
 
 
