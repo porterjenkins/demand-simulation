@@ -19,7 +19,7 @@ class InventoryProduct(object):
         if self.quantity >= 1:
             self.quantity -= 1
         else:
-            raise ValueError(f"Current quantity = {self.quantity}")
+            raise ValueError(f"Current quantity of {self.name} = {self.quantity}")
 
     def restock(self, q):
         self.quantity = q
@@ -40,6 +40,16 @@ class Inventory(object):
             inv_prod = InventoryProduct(name=p, quantity=max_per_slot)
             self.inv[slot_id] = inv_prod
 
+    def get_total_quantity(self):
+        q = {}
+        for idx, item in self.inv.items():
+            if item.name not in q:
+                q[item.name] = 0
+            q[item.name] += item.quantity
+
+        return q
+
+
     def get_state_mtx(self):
         """
             create a state matrix with dims (n_products x n_products+1)
@@ -54,14 +64,24 @@ class Inventory(object):
             ]
         :return:
         """
-        state = np.zeros((self.n_prods, self.n_prods+1))
+        #state = np.zeros((self.n_prods, self.n_prods+1))
+        state = []
+        names = []
 
-        for _, inv_prod in self.inv.items():
-            idx = cfg.prod2idx[inv_prod.name]
-            state[idx, idx] = 1.0 # turn on product
-            state[idx, -1] = 1.0 # turn on price
+        prod_quant = self.get_total_quantity()
 
-        return state
+
+        for name, q in prod_quant.items():
+            idx = cfg.prod2idx[name]
+            state_vec = np.zeros(self.n_prods+1)
+            state_vec[idx] = 1.0 # turn on product
+            state_vec[-1] = 1.0 # turn on price
+
+            if q > 0:
+                state.append(state_vec)
+                names.append(name)
+
+        return np.array(state), names
 
     def restock(self, action_dict):
         """
@@ -77,10 +97,13 @@ class Inventory(object):
         slot_id = 0
         while not shopped:
             prod_inv = self.inv[slot_id]
-            if prod_inv.name == product:
+            if prod_inv.name == product and prod_inv.quantity > 0:
                 prod_inv.decrement()
                 shopped = True
             slot_id += 1
+            if slot_id == self.n_slots and not shopped:
+                # checked all slots and couldn't decrement. Exit loop
+                shopped = True
 
 
 

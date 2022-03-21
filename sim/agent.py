@@ -32,13 +32,12 @@ class Agent(object):
     def __str__(self):
         return str(self.name)
 
-    def action_select(self, state_mtx):
+    def action_select(self, state_mtx, names):
         """
 
         :param state_mtx: n x (n x 1), where n is the number of products
         :return:
         """
-        p_names = cfg.get_products()
         logits = state_mtx @ self.params
         probs = softmax(logits)
         choice = np.random.choice(
@@ -47,7 +46,7 @@ class Agent(object):
             p=probs
         )
 
-        choice = p_names[choice[0]]
+        choice = names[choice[0]]
         return choice
 
     def update_loc(self, loc):

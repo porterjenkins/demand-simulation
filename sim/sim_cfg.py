@@ -39,6 +39,10 @@ class SimCfg(object):
 
         return weights
 
+    def get_price_by_product(self, p):
+        p = self.cfg_dict["params"]["products"][p]["price"]
+        return p
+
     def get_prod_prices(self):
         prices = []
         for p, idx in self.prod2idx.items():

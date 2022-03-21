@@ -11,6 +11,8 @@ from buffer import Buffer
 from sim.agent import Agent
 from sim.display import CoolerDisplay
 
+from visualizer import plt_cumulative_rewards
+
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
@@ -22,6 +24,7 @@ class Simulator(gym.Env):
         self.timedelta = datetime.timedelta(
             hours=cfg.get_timedelta()
         )
+
 
 
         self.buffer = Buffer()
@@ -37,23 +40,33 @@ class Simulator(gym.Env):
         s = ",".join(l)
         return "{" + s + "}"
 
+
+
     def step(self, action=None):
         # TODO
-        self.store.shop_agents()
+        rewards = self.store.shop_agents()
         self.store.move_agents()
+
+        obs = self.store
+
+        return obs, rewards, False, {}
 
 
     def main(self, recommender=None):
         curr_time = self.start_dt
         step_cntr = 0
+        eps_rewards = {}
+
         while curr_time < self.end_dt:
 
             print(f"Simulating step: {step_cntr}, {curr_time}")
+            # TODO: Insert action logic here
+
             self.store.print_state()
-            self.step()
+            obs, rewards, _, _ = self.step()
+            print("Sold:", rewards)
 
-
-            # TODO: Insert simulation logic here
+            eps_rewards = self.increment_rewards(eps_rewards, rewards)
 
             """self.buffer.add(
                 (
@@ -72,6 +85,23 @@ class Simulator(gym.Env):
             curr_time += self.timedelta
             step_cntr += 1
         #self.buffer.to_csv("output.csv")
+        plt_cumulative_rewards(eps_rewards, show=True)
+
+
+
+    @staticmethod
+    def increment_rewards(agg, new):
+        if not agg:
+            agg = {}
+
+        for k, v in new.items():
+            if k not in agg:
+                agg[k] = []
+            else:
+                agg[k].append(v)
+
+        return agg
+
 
     @classmethod
     def build_sim(cls):

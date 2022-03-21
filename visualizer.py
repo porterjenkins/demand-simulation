@@ -5,17 +5,17 @@ import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
+def plt_cumulative_rewards(eps_rewards, fname='step-plt.png', show=False):
 
-df = pd.read_csv("output.csv")
-df['day'] = pd.to_datetime(df['day'])
-agg = df[['quantity', "day", "product"]].groupby(["day", "product"]).sum().reset_index()
+    for k, v in eps_rewards.items():
+        cumsum = np.cumsum(v)
+        x = np.arange(len(cumsum))
+        plt.plot(x, cumsum, label=k)
+        plt.xlabel("Step")
+        plt.ylabel("Revenue")
+        plt.legend(loc="best")
 
-ax = plt.figure(figsize=(12, 8))
-
-for key, group in agg.groupby("product"):
-    plt.plot(group["day"].values, group["quantity"].values, marker='o', linestyle='--', label=key)
-
-plt.legend(loc='best')
-plt.xlabel("Time")
-plt.ylabel("Quantity Sold")
-plt.savefig("time-series.png")
+    if show:
+        plt.show()
+    else:
+        plt.savefig(fname)

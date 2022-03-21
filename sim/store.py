@@ -1,6 +1,10 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import numpy as np
 from sim import cfg
 from sim.agent import Agent
-import numpy as np
 
 
 class Region(object):
@@ -111,17 +115,30 @@ class Store(object):
 
     def shop_agents(self):
         d = {}
+
+        rewards = {}
+        for r in self.regions.keys():
+            rewards[r] = 0
+
         for a_name, agent in self.agents.items():
             reg = self.regions[agent.curr_loc]
             displays = reg.get_displays()
             d_idx = np.random.randint(len(displays))
 
             disp = displays[d_idx]
-            state_mtx = disp.get_state_mtx()
-            action = agent.action_select(state_mtx)
+            state_mtx, names = disp.get_state_mtx()
 
-            disp.decrement(action)
+            if state_mtx.size > 0:
+                action = agent.action_select(state_mtx, names)
+                disp.decrement(action)
+                price = cfg.get_price_by_product(action)
+            else:
+                price = 0.0
+
             disp.print_state()
+            rewards[reg.name] += price
+
+        return rewards
 
 
 
