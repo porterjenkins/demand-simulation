@@ -39,6 +39,7 @@ class Simulator(gym.Env):
 
     def step(self, action=None):
         # TODO
+        self.store.shop_agents()
         self.store.move_agents()
 
 

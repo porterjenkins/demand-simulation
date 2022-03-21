@@ -4,7 +4,7 @@ import numpy as np
 
 
 class Region(object):
-    def __init__(self, name, trans_probs, idx, displays=[], is_entrance=False):
+    def __init__(self, name, trans_probs, idx, displays, is_entrance=False):
         self.name = name
         self.trans_probs = trans_probs
         self.displays = displays
@@ -16,6 +16,9 @@ class Region(object):
 
     def add_display(self, disp):
         self.displays.append(disp)
+
+    def get_displays(self):
+        return self.displays
 
 
 class Store(object):
@@ -49,7 +52,8 @@ class Store(object):
                 name=name,
                 trans_probs=self.trans_mtx[r_idx, :],
                 is_entrance=is_entrance,
-                idx=r_idx
+                idx=r_idx,
+                displays=[]
             )
             regions[name] = reg
             i += 1
@@ -58,7 +62,8 @@ class Store(object):
 
     def add_displays_to_regions(self, disp_list):
         for disp in disp_list:
-            self.regions[disp.region].add_display(disp)
+            reg = self.regions[disp.region]
+            reg.add_display(disp)
 
     def add_agent(self, agent):
         self.agents[agent.name] = agent
@@ -104,6 +109,14 @@ class Store(object):
 
         self.agents = d
 
+    def shop_agents(self):
+        d = {}
+        for a_name, agent in self.agents.items():
+            reg = self.regions[agent.curr_loc]
+            displays = reg.get_displays()
+            d_idx = np.random.randint(len(displays))
+
+            disp = displays[d_idx]
 
 
     @staticmethod
