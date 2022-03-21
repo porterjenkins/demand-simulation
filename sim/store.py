@@ -113,12 +113,13 @@ class Store(object):
 
         self.agents = d
 
-    def shop_agents(self):
+    def shop_agents(self, verbose=False):
         d = {}
 
         rewards = {}
-        for r in self.regions.keys():
-            rewards[r] = 0
+        for _, r in self.regions.items():
+            for d in r.get_displays():
+                rewards[d.name] = 0
 
         for a_name, agent in self.agents.items():
             reg = self.regions[agent.curr_loc]
@@ -135,8 +136,10 @@ class Store(object):
             else:
                 price = 0.0
 
-            disp.print_state()
-            rewards[reg.name] += price
+            if verbose:
+                disp.print_state()
+
+            rewards[disp.name] += price
 
         return rewards
 

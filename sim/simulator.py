@@ -16,7 +16,7 @@ from visualizer import plt_cumulative_rewards
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
-    def __init__(self, start_dt, end_dt, store):
+    def __init__(self, start_dt, end_dt, store, verbose=False):
 
         self.start_dt = start_dt
         self.end_dt = end_dt
@@ -24,6 +24,7 @@ class Simulator(gym.Env):
         self.timedelta = datetime.timedelta(
             hours=cfg.get_timedelta()
         )
+        self.verbose = verbose
 
 
 
@@ -44,9 +45,8 @@ class Simulator(gym.Env):
 
     def step(self, action=None):
         # TODO
-        rewards = self.store.shop_agents()
+        rewards = self.store.shop_agents(self.verbose)
         self.store.move_agents()
-
         obs = self.store
 
         return obs, rewards, False, {}
@@ -64,7 +64,8 @@ class Simulator(gym.Env):
 
             self.store.print_state()
             obs, rewards, _, _ = self.step()
-            print("Sold:", rewards)
+            if self.verbose:
+                print("Sold:", rewards)
 
             eps_rewards = self.increment_rewards(eps_rewards, rewards)
 
