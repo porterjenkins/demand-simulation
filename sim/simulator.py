@@ -43,11 +43,16 @@ class Simulator(gym.Env):
 
 
 
-    def step(self, action=None):
-        # TODO
+    def step(self, ts, action=None):
+        # existing agents make choices
         rewards = self.store.shop_agents(self.verbose)
+        # agents move across store
         self.store.move_agents()
         obs = self.store
+
+        # additional agents enter
+        agents = Agent.gen_agents(ts)
+        self.store.get_enter_agents(agents)
 
         return obs, rewards, False, {}
 
@@ -63,7 +68,7 @@ class Simulator(gym.Env):
             # TODO: Insert action logic here
 
             self.store.print_state()
-            obs, rewards, _, _ = self.step()
+            obs, rewards, _, _ = self.step(curr_time)
             if self.verbose:
                 print("Sold:", rewards)
 

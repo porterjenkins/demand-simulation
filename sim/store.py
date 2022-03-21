@@ -72,6 +72,9 @@ class Store(object):
     def add_agent(self, agent):
         self.agents[agent.name] = agent
 
+    def get_num_agents(self):
+        return len(self.agents)
+
     def get_enter_agents(self, agents):
         """
 
