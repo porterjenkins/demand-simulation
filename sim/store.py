@@ -1,5 +1,7 @@
 from sim import cfg
+from sim.agent import Agent
 import numpy as np
+
 
 class Region(object):
     def __init__(self, name, trans_probs, idx, displays=[], is_entrance=False):
@@ -81,6 +83,26 @@ class Store(object):
             bar = "".join(["X"]*cnt)
             print(f"\t{reg}: {bar}")
 
+
+    def move_agents(self):
+        d = {}
+        for a_name, agent in self.agents.items():
+            probs = self.regions[agent.curr_loc].trans_probs
+            prev_loc = agent.curr_loc
+            new_loc = agent.action_move(probs)
+
+            is_exit = Agent.exit_rm_agent(
+                agent=agent,
+                curr_region=self.regions[new_loc],
+                prev_loc=prev_loc
+            )
+
+            if is_exit:
+               del agent
+            else:
+                d[a_name] = agent
+
+        self.agents = d
 
 
 

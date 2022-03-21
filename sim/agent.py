@@ -56,6 +56,7 @@ class Agent(object):
     def action_move(self, trans_probs):
         new_loc = self.gen_new_loc(trans_probs)
         self.update_loc(new_loc)
+        return new_loc
 
     def gen_new_loc(self, trans_probs):
         idx = np.random.choice(
@@ -84,6 +85,20 @@ class Agent(object):
 
         return agents
 
+    @classmethod
+    def exit_rm_agent(cls, agent, curr_region, prev_loc):
+        """
+        Agent exits (is deleted) if he is in the entrance region, and chooses to "stay" in that region.
+        :param agent: Agent object
+        :param curr_region: Region object of current region
+        :param prev_loc: (str) Name of previous region
+        :return:
+        """
+        if curr_region.name == prev_loc and curr_region.is_entrance:
+            print(f"{agent} exits")
+            return True
+        else:
+            return False
 
     @classmethod
     def get_sinx(cls, x, a, b, c, d):

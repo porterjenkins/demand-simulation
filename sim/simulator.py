@@ -39,9 +39,7 @@ class Simulator(gym.Env):
 
     def step(self, action=None):
         # TODO
-        for a_name, agent in self.store.agents.items():
-            probs = self.store.regions[agent.curr_loc].trans_probs
-            agent.action_move(probs)
+        self.store.move_agents()
 
 
     def main(self, recommender=None):
