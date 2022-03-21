@@ -1,6 +1,7 @@
 import numpy as np
 from sim import cfg
 from uuid import uuid4
+import pprint
 
 
 class InventoryProduct(object):
@@ -10,7 +11,7 @@ class InventoryProduct(object):
         self.quantity = quantity
 
     def __str__(self):
-        return f"{self.name}, {self.quantity}"
+        return f"{self.name}: {self.quantity}"
 
     def increment(self):
         self.quantity += 1
@@ -108,6 +109,26 @@ class CoolerDisplay(object):
 
     def decrement(self, product):
         self.inventory.decrement(product)
+
+    def print_state(self, n_cols=4):
+        state_dict = self.inventory.inv
+        n_slots = self.inventory.n_slots
+
+        n_rows = n_slots // n_cols
+        if n_slots % n_cols > 0:
+            n_rows += 1
+
+        state = np.array(["N/A"]*(n_rows*n_cols), dtype=object)
+
+        for idx, inv in state_dict.items():
+            state[idx] = inv.__str__()
+
+        print("-"*20)
+        print(self.__str__())
+        print(state.reshape(n_rows, n_cols))
+
+
+
 
 
     @classmethod

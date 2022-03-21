@@ -117,6 +117,12 @@ class Store(object):
             d_idx = np.random.randint(len(displays))
 
             disp = displays[d_idx]
+            state_mtx = disp.get_state_mtx()
+            action = agent.action_select(state_mtx)
+
+            disp.decrement(action)
+            disp.print_state()
+
 
 
     @staticmethod
