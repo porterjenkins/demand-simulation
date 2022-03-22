@@ -122,7 +122,10 @@ class Store(object):
         rewards = {}
         for _, r in self.regions.items():
             for d in r.get_displays():
-                rewards[d.name] = 0
+                rewards[d.name] = {}
+                prods = cfg.get_products()
+                for p in prods:
+                    rewards[d.name][p] = 0.0
 
         for a_name, agent in self.agents.items():
             reg = self.regions[agent.curr_loc]
@@ -136,13 +139,11 @@ class Store(object):
                 action = agent.action_select(state_mtx, names)
                 disp.decrement(action)
                 price = cfg.get_price_by_product(action)
-            else:
-                price = 0.0
+                rewards[disp.name][action] += price
 
             if verbose:
                 disp.print_state()
 
-            rewards[disp.name] += price
 
         return rewards
 
