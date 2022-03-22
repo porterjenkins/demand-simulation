@@ -4,8 +4,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import numpy as np
 from sim import cfg
-from sim.agent import Agent
+# from sim.agent import Agent
 
+from agent import Agent
 
 class Region(object):
     def __init__(self, name, trans_probs, idx, displays, is_entrance=False):
