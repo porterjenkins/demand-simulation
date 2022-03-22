@@ -1,8 +1,13 @@
+import os
+import sys
+
+path = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(path)
+
 import gym
 import numpy as np
 import datetime
 import yaml
-
 from sim import cfg
 
 from sim.store import Store

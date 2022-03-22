@@ -1,10 +1,17 @@
+import os
+import sys
+
+# path = os.path.join(os.path.dirname(__file__), os.pardir)
+# sys.path.append(path)
+os.chdir(os.path.join(os.path.dirname(__file__)))
+
 import yaml
 import numpy as np
-
-
 class SimCfg(object):
 
     def __init__(self, cfg_path):
+        # print(os.listdir())
+        # print(os.path.join(os.path.dirname(__file__)))
         with open(cfg_path, "r") as f:
             self.cfg_dict = yaml.safe_load(f)
 
