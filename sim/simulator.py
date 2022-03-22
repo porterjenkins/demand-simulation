@@ -10,13 +10,22 @@ import datetime
 import yaml
 from sim import cfg
 
-from sim.store import Store
-from sim.prior import Prior, Params, DisplayLocations
+from store import Store
+from prior import Prior, Params, DisplayLocations
 from buffer import Buffer
 from sim.agent import Agent
 from sim.display import CoolerDisplay
 
 from visualizer import plt_cumulative_rewards
+
+# Original:
+# from sim.store import Store
+# from sim.prior import Prior, Params, DisplayLocations
+# from buffer import Buffer
+# from sim.agent import Agent
+# from sim.display import CoolerDisplay
+
+# from visualizer import plt_cumulative_rewards
 
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
