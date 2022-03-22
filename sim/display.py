@@ -32,6 +32,8 @@ class Inventory(object):
         self.n_prods = len(products)
         self.n_slots = n_slots
         self.inv = {}
+        self.max_per_slot
+
         for slot_id in range(n_slots):
 
             idx = slot_id % self.n_prods
@@ -83,13 +85,15 @@ class Inventory(object):
 
         return np.array(state), names
 
-    def restock(self, action_dict):
+    def restock(self):
         """
+        Max Capcity is all available slots x max_per_slot
 
         :param action_dict: slots per product
         :return:
         """
-        pass
+        for _, v in self.inv.items():
+            v.restock(self.max_per_slot)
 
     def decrement(self, product):
 
