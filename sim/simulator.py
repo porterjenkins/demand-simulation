@@ -13,8 +13,8 @@ from sim import cfg
 from store import Store
 from prior import Prior, Params, DisplayLocations
 from buffer import Buffer
-from sim.agent import Agent
-from sim.display import CoolerDisplay
+from agent import Agent
+from display import CoolerDisplay
 
 from visualizer import plt_cumulative_rewards
 
