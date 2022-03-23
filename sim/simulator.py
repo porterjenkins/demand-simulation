@@ -14,7 +14,7 @@ from sim.rewards import Rewards
 from buffer import Buffer
 
 
-from visualizer import plt_cumulative_rewards
+from visualizer import plt_cumulative_rewards, plot_traffic
 
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
@@ -36,6 +36,7 @@ class Simulator(gym.Env):
         self.curr_time = self.start_dt
         self.stepsize = cfg.get_step_size()
         self.traffic = []
+        self.ts = []
 
 
 
@@ -61,6 +62,8 @@ class Simulator(gym.Env):
 
         for ts in range(self.stepsize):
             self.store.print_state()
+            self.traffic.append(self.store.get_n_agents())
+            self.ts.append(self.curr_time)
 
 
             # existing agents make choices
@@ -123,6 +126,7 @@ class Simulator(gym.Env):
             step_cntr += 1
         #self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)
+        plot_traffic(self.ts, self.traffic, show=True)
 
 
 

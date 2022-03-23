@@ -34,3 +34,15 @@ def plt_cumulative_rewards(eps_rewards, fname='step-plt.png', show=False):
         plt.show()
     else:
         plt.savefig(fname)
+
+
+def plot_traffic(ts, traffic, fname="traffic.png", show=False):
+    plt.figure(figsize=(12, 8))
+    plt.plot(ts, traffic, "--", marker='o', c='red')
+    plt.xlabel("Datetime")
+    plt.ylabel("Number of Agents")
+    plt.xticks(rotation=45)
+    if show:
+        plt.show()
+    else:
+        plt.savefig(fname)
