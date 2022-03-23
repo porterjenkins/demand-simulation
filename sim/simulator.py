@@ -102,9 +102,11 @@ class Simulator(gym.Env):
 
         for k, v in new.items():
             if k not in agg:
-                agg[k] = []
-            else:
-                agg[k].append(v)
+                agg[k] = {}
+            for k2, v2 in v.items():
+                if k2 not in agg[k]:
+                    agg[k][k2] = []
+                agg[k][k2].append(v2)
 
         return agg
 

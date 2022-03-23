@@ -4,6 +4,7 @@ time:
   timedelta:
     unit: hour # assume hours for now
     resolution: 1
+    step: 4
 store:
   adj:
     - [1, 1, 0]

@@ -79,3 +79,7 @@ class SimCfg(object):
     def get_timedelta(self):
         td_dict = self.cfg_dict["time"]["timedelta"]
         return td_dict["resolution"]
+
+    def get_step_size(self):
+        td_dict = self.cfg_dict["time"]["timedelta"]
+        return td_dict["step"]
