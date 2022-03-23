@@ -7,9 +7,12 @@ from sim import cfg
 
 from sim.store import Store
 from sim.prior import Prior, Params, DisplayLocations
-from buffer import Buffer
 from sim.agent import Agent
 from sim.display import CoolerDisplay
+from sim.rewards import Rewards
+
+from buffer import Buffer
+
 
 from visualizer import plt_cumulative_rewards
 
@@ -25,6 +28,10 @@ class Simulator(gym.Env):
             hours=cfg.get_timedelta()
         )
         self.verbose = verbose
+        self.rewards = Rewards(
+            displays=cfg.get_display_names(),
+            products=cfg.get_product_names()
+        )
 
 
 
@@ -54,6 +61,8 @@ class Simulator(gym.Env):
         agents = Agent.gen_agents(ts)
         self.store.get_enter_agents(agents)
 
+        self.rewards.increment(rewards)
+
         return obs, rewards, False, {}
 
 
@@ -72,7 +81,6 @@ class Simulator(gym.Env):
             if self.verbose:
                 print("Sold:", rewards)
 
-            eps_rewards = self.increment_rewards(eps_rewards, rewards)
 
             """self.buffer.add(
                 (
@@ -91,24 +99,9 @@ class Simulator(gym.Env):
             curr_time += self.timedelta
             step_cntr += 1
         #self.buffer.to_csv("output.csv")
-        plt_cumulative_rewards(eps_rewards, show=True)
+        plt_cumulative_rewards(self.rewards.todict(), show=True)
 
 
-
-    @staticmethod
-    def increment_rewards(agg, new):
-        if not agg:
-            agg = {}
-
-        for k, v in new.items():
-            if k not in agg:
-                agg[k] = {}
-            for k2, v2 in v.items():
-                if k2 not in agg[k]:
-                    agg[k][k2] = []
-                agg[k][k2].append(v2)
-
-        return agg
 
 
     @classmethod

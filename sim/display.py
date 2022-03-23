@@ -162,8 +162,8 @@ class CoolerDisplay(object):
                 display = CoolerDisplay(
                     n_slots=dta["n_slots"],
                     max_per_slot=dta["max_per_slot"],
-                    products=cfg.get_products(),
-                    name=f"{reg}-{disp_type}",
+                    products=cfg.get_product_names(),
+                    name=cfg.get_disp_name(reg, disp_type),
                     region=reg
                 )
                 disp_list.append(display)
@@ -177,6 +177,6 @@ if __name__ == "__main__":
     inv = Inventory(
         n_slots=11,
         max_per_slot=5,
-        products=cfg.get_products()
+        products=cfg.get_product_names()
     )
     inv.get_state_mtx()
