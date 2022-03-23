@@ -33,6 +33,9 @@ class Simulator(gym.Env):
             products=cfg.get_product_names()
         )
 
+        self.curr_time = self.start_dt
+        self.stepsize = cfg.get_step_size()
+
 
 
         self.buffer = Buffer()
@@ -50,34 +53,48 @@ class Simulator(gym.Env):
 
 
 
-    def step(self, ts, action=None):
-        # existing agents make choices
-        rewards = self.store.shop_agents(self.verbose)
-        # agents move across store
-        self.store.move_agents()
-        obs = self.store
+    def step(self, action=None):
 
-        # additional agents enter
-        agents = Agent.gen_agents(ts)
-        self.store.get_enter_agents(agents)
+        obs = None
+        rewards = None
 
-        self.rewards.increment(rewards)
+        for ts in range(self.stepsize):
+            # existing agents make choices
+            rewards = self.store.shop_agents(self.verbose)
+            # agents move across store
+            self.store.move_agents()
+            obs = self.store
 
-        return obs, rewards, False, {}
+            # additional agents enter
+            agents = Agent.gen_agents(self.curr_time)
+            self.store.get_enter_agents(agents)
+            self.store.print_state()
+
+
+            self.rewards.increment(rewards)
+            self.curr_time += self.timedelta
+
+        if self.curr_time > self.end_dt:
+            done = True
+        else:
+            done = False
+
+        return obs, rewards, done, {}
 
 
     def main(self, recommender=None):
-        curr_time = self.start_dt
+
         step_cntr = 0
         eps_rewards = {}
+        done = False
 
-        while curr_time < self.end_dt:
+        while not done:
 
-            print(f"Simulating step: {step_cntr}, {curr_time}")
+            print(f"Simulating step: {step_cntr}, {self.curr_time}")
             # TODO: Insert action logic here
 
-            self.store.print_state()
-            obs, rewards, _, _ = self.step(curr_time)
+
+            obs, rewards, done, info = self.step()
             if self.verbose:
                 print("Sold:", rewards)
 
@@ -95,8 +112,6 @@ class Simulator(gym.Env):
 
                 )
             )"""
-
-            curr_time += self.timedelta
             step_cntr += 1
         #self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)

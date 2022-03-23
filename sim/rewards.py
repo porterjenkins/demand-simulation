@@ -29,8 +29,6 @@ class Rewards(object):
                 for p in disp_dict.keys():
                     self.add_disp_product_rew(disp, p, 0)
 
-        return None
-
 
 
 
