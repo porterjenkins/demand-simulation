@@ -30,8 +30,9 @@ class Agent(object):
         "d": 10.0
     }
 
-    def __init__(self, params):
+    def __init__(self, params, choice_prob):
         self.params = params
+        self.choice_prob = choice_prob
         self.id = uuid4()
         self.name = names.get_full_name()
         self.curr_loc = None
@@ -73,6 +74,13 @@ class Agent(object):
 
         return cfg.idx2reg[idx]
 
+    def make_choice(self):
+        alpha = random.random()
+        if alpha < self.choice_prob:
+            return True
+        else:
+            return False
+
 
     @classmethod
     def build_agents(
@@ -80,13 +88,14 @@ class Agent(object):
             n_agents,
             product_params,
             price_params,
-            sigma
+            sigma,
+            choice
     ):
         glob_params = Prior.vectorize_params(product_params, price_params)
         ind_params = Prior.gen_ind_params(glob_params, sigma, n_agents)
         agents = {}
         for p in ind_params:
-            agent = Agent(p)
+            agent = Agent(p, choice_prob=choice)
             agents[agent.name] = agent
 
         return agents
@@ -178,7 +187,8 @@ class Agent(object):
             n_agents=n_agents,
             product_params=cfg.get_prod_weight(),
             price_params=cfg.get_price_param(),
-            sigma=cfg.get_var_param()
+            sigma=cfg.get_var_param(),
+            choice=cfg.get_choice_prob()
         )
 
         return agents

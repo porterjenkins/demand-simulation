@@ -128,24 +128,25 @@ class Store(object):
         rewards = {}
 
         for a_name, agent in self.agents.items():
-            reg = self.regions[agent.curr_loc]
-            displays = reg.get_displays()
-            d_idx = np.random.randint(len(displays))
+            if agent.make_choice():
+                reg = self.regions[agent.curr_loc]
+                displays = reg.get_displays()
+                d_idx = np.random.randint(len(displays))
 
-            disp = displays[d_idx]
-            state_mtx, names = disp.get_state_mtx()
+                disp = displays[d_idx]
+                state_mtx, names = disp.get_state_mtx()
 
-            if state_mtx.size > 0:
-                action = agent.action_select(state_mtx, names)
-                disp.decrement(action)
-                price = cfg.get_price_by_product(action)
-                #rewards[disp.name][action] += price
-                if disp.name not in rewards:
-                    rewards[disp.name] = {}
-                if action not in rewards[disp.name]:
-                    rewards[disp.name][action] = 0
+                if state_mtx.size > 0:
+                    action = agent.action_select(state_mtx, names)
+                    disp.decrement(action)
+                    price = cfg.get_price_by_product(action)
+                    #rewards[disp.name][action] += price
+                    if disp.name not in rewards:
+                        rewards[disp.name] = {}
+                    if action not in rewards[disp.name]:
+                        rewards[disp.name][action] = 0
 
-                rewards[disp.name][action] += price
+                    rewards[disp.name][action] += price
 
 
 

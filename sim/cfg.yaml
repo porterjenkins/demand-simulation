@@ -46,7 +46,8 @@ params:
       weight: 0.5
       price: 1.99
     "Monster_16oz_can":
-      weight: 1.75
+      weight: 10.0
       price: 2.99
   price: -1.1
   sigma: 0.5
+  choice: 0.2

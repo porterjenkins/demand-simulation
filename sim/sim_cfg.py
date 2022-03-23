@@ -91,6 +91,9 @@ class SimCfg(object):
         td_dict = self.cfg_dict["time"]["timedelta"]
         return td_dict["step"]
 
+    def get_choice_prob(self):
+        return self.cfg_dict["params"]["choice"]
+
     @staticmethod
     def get_disp_name(reg, disp_type):
         return f"{reg}-{disp_type}"
