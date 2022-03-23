@@ -55,15 +55,18 @@ class Simulator(gym.Env):
 
     def step(self, action=None):
 
-        obs = None
+        state = None
         rewards = None
 
         for ts in range(self.stepsize):
             # existing agents make choices
             rewards = self.store.shop_agents(self.verbose)
+
             # agents move across store
             self.store.move_agents()
-            obs = self.store
+            state = self.store.get_state_dict()
+            # calculate rewards
+            self.rewards.increment(rewards)
 
             # additional agents enter
             agents = Agent.gen_agents(self.curr_time)
@@ -71,7 +74,6 @@ class Simulator(gym.Env):
             self.store.print_state()
 
 
-            self.rewards.increment(rewards)
             self.curr_time += self.timedelta
 
         if self.curr_time > self.end_dt:
@@ -79,7 +81,7 @@ class Simulator(gym.Env):
         else:
             done = False
 
-        return obs, rewards, done, {}
+        return state, rewards, done, {}
 
 
     def main(self, recommender=None):

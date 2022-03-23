@@ -148,6 +148,14 @@ class Store(object):
 
         return rewards
 
+    def get_state_dict(self):
+        state = {}
+        for r_name, reg in self.regions.items():
+            for d in reg.displays:
+                inv = d.get_slot_counts()
+                state[d.name] = inv
+
+        return state
 
 
     @staticmethod

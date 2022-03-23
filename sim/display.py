@@ -150,6 +150,13 @@ class CoolerDisplay(object):
         print(self.__str__())
         print(state.reshape(n_rows, n_cols))
 
+    def get_slot_counts(self):
+        cnts = {}
+        for id, inv in self.inventory.inv.items():
+            cnts[id] = (inv.name, inv.quantity)
+
+        return cnts
+
 
 
 
