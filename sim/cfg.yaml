@@ -34,16 +34,16 @@ store:
 params:
   products:
     "coca_cola_20oz_bottle":
-      weight: 0
+      weight: 1.5
       price: 1.99
     "dr_pepper_20oz_bottle":
-      weight: 0
+      weight: 1.25
       price: .99
     "diet_coke_20oz_bottle":
-      weight: 0
+      weight: 1.0
       price: 1.99
     "sprite_20oz_bottle":
-      weight: 0
+      weight: 0.5
       price: 1.99
     "Monster_16oz_can":
       weight: 1.75
