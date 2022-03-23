@@ -35,6 +35,7 @@ class Simulator(gym.Env):
 
         self.curr_time = self.start_dt
         self.stepsize = cfg.get_step_size()
+        self.traffic = []
 
 
 
@@ -59,11 +60,16 @@ class Simulator(gym.Env):
         rewards = None
 
         for ts in range(self.stepsize):
+            self.store.print_state()
+
+
             # existing agents make choices
             rewards = self.store.shop_agents(self.verbose)
 
             # agents move across store
-            self.store.move_agents()
+            self.store.move_agents(self.curr_time)
+
+            # get state
             state = self.store.get_state_dict()
             # calculate rewards
             self.rewards.increment(rewards)
@@ -71,7 +77,7 @@ class Simulator(gym.Env):
             # additional agents enter
             agents = Agent.gen_agents(self.curr_time)
             self.store.get_enter_agents(agents)
-            self.store.print_state()
+
 
 
             self.curr_time += self.timedelta

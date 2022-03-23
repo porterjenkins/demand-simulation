@@ -6,8 +6,15 @@ from prior import Prior
 from sim_utils import softmax
 from uuid import uuid4
 import names
+import random
 
 class Agent(object):
+
+    exit_hours = {
+        "min": 22,
+        "max": 5,
+        "prob": 0.8
+    }
 
     weekday_params = {
         "a": 2.8,
@@ -94,10 +101,20 @@ class Agent(object):
         :return:
         """
         if curr_region.name == prev_loc and curr_region.is_entrance:
-            print(f"{agent} exits")
             return True
         else:
             return False
+
+    @classmethod
+    def exit_rm_agent_time(cls, ts):
+        hour = ts.hour
+        is_exit = False
+        if hour > cls.exit_hours["min"] or hour < cls.exit_hours["max"]:
+            alpha = random.random()
+            if alpha < cls.exit_hours["prob"]:
+                is_exit = True
+
+        return is_exit
 
     @classmethod
     def get_sinx(cls, x, a, b, c, d):
