@@ -88,6 +88,9 @@ class Store(object):
 
 
     def print_state(self):
+        # n agents
+        n_agents = self.get_n_agents()
+        print("--" * 10)
         reg_cntr = dict(zip(list(self.regions.keys()), [0]*len(self.regions)))
         for a_name, a in self.agents.items():
             reg_cntr[a.curr_loc] += 1
@@ -95,57 +98,76 @@ class Store(object):
             bar = "".join(["X"]*cnt)
             print(f"\t{reg}: {bar}")
 
+        print(f"\ttotal agents: {n_agents}")
+        print("--" * 10)
 
-    def move_agents(self):
+
+    def move_agents(self, ts):
         d = {}
         for a_name, agent in self.agents.items():
             probs = self.regions[agent.curr_loc].trans_probs
             prev_loc = agent.curr_loc
             new_loc = agent.action_move(probs)
 
-            is_exit = Agent.exit_rm_agent(
+            is_exit_pos = Agent.exit_rm_agent(
                 agent=agent,
                 curr_region=self.regions[new_loc],
                 prev_loc=prev_loc
             )
+            is_exit_time = Agent.exit_rm_agent_time(ts)
 
-            if is_exit:
-               del agent
+            if is_exit_pos or is_exit_time:
+                print(f"{agent} exits")
+                del agent
             else:
                 d[a_name] = agent
 
         self.agents = d
 
     def shop_agents(self, verbose=False):
-        d = {}
-
         rewards = {}
-        for _, r in self.regions.items():
-            for d in r.get_displays():
-                rewards[d.name] = 0
 
         for a_name, agent in self.agents.items():
-            reg = self.regions[agent.curr_loc]
-            displays = reg.get_displays()
-            d_idx = np.random.randint(len(displays))
+            if agent.make_choice():
+                reg = self.regions[agent.curr_loc]
+                displays = reg.get_displays()
+                d_idx = np.random.randint(len(displays))
 
-            disp = displays[d_idx]
-            state_mtx, names = disp.get_state_mtx()
+                disp = displays[d_idx]
+                state_mtx, names = disp.get_state_mtx()
 
-            if state_mtx.size > 0:
-                action = agent.action_select(state_mtx, names)
-                disp.decrement(action)
-                price = cfg.get_price_by_product(action)
-            else:
-                price = 0.0
+                if state_mtx.size > 0:
+                    action = agent.action_select(state_mtx, names)
+                    disp.decrement(action)
+                    price = cfg.get_price_by_product(action)
+                    #rewards[disp.name][action] += price
+                    if disp.name not in rewards:
+                        rewards[disp.name] = {}
+                    if action not in rewards[disp.name]:
+                        rewards[disp.name][action] = 0
+
+                    rewards[disp.name][action] += price
+
+
+
 
             if verbose:
                 disp.print_state()
 
-            rewards[disp.name] += price
 
         return rewards
 
+    def get_state_dict(self):
+        state = {}
+        for r_name, reg in self.regions.items():
+            for d in reg.displays:
+                inv = d.get_slot_counts()
+                state[d.name] = inv
+
+        return state
+
+    def get_n_agents(self):
+        return len(self.agents)
 
 
     @staticmethod

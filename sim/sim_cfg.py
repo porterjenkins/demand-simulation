@@ -25,7 +25,7 @@ class SimCfg(object):
             self.idx2reg[i] = r
             i += 1
 
-    def get_products(self):
+    def get_product_names(self):
         products = []
         for p, idx in self.prod2idx.items():
             products.append(p)
@@ -64,6 +64,13 @@ class SimCfg(object):
     def get_region_names(self):
         return list(self.cfg_dict["store"]["regions"].keys())
 
+    def get_display_names(self):
+        disp = []
+        for reg, reg_dict in self.cfg_dict["store"]["regions"].items():
+            for d in reg_dict["displays"].keys():
+                disp.append(self.get_disp_name(reg, d))
+        return disp
+
     def get_var_param(self):
         return self.cfg_dict["params"]["sigma"]
 
@@ -79,3 +86,14 @@ class SimCfg(object):
     def get_timedelta(self):
         td_dict = self.cfg_dict["time"]["timedelta"]
         return td_dict["resolution"]
+
+    def get_step_size(self):
+        td_dict = self.cfg_dict["time"]["timedelta"]
+        return td_dict["step"]
+
+    def get_choice_prob(self):
+        return self.cfg_dict["params"]["choice"]
+
+    @staticmethod
+    def get_disp_name(reg, disp_type):
+        return f"{reg}-{disp_type}"

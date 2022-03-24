@@ -7,11 +7,14 @@ from sim import cfg
 
 from sim.store import Store
 from sim.prior import Prior, Params, DisplayLocations
-from buffer import Buffer
 from sim.agent import Agent
 from sim.display import CoolerDisplay
+from sim.rewards import Rewards
 
-from visualizer import plt_cumulative_rewards
+from buffer import Buffer
+
+
+from visualizer import plt_cumulative_rewards, plot_traffic
 
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
@@ -25,6 +28,15 @@ class Simulator(gym.Env):
             hours=cfg.get_timedelta()
         )
         self.verbose = verbose
+        self.rewards = Rewards(
+            displays=cfg.get_display_names(),
+            products=cfg.get_product_names()
+        )
+
+        self.curr_time = self.start_dt
+        self.stepsize = cfg.get_step_size()
+        self.traffic = []
+        self.ts = []
 
 
 
@@ -43,36 +55,60 @@ class Simulator(gym.Env):
 
 
 
-    def step(self, ts, action=None):
-        # existing agents make choices
-        rewards = self.store.shop_agents(self.verbose)
-        # agents move across store
-        self.store.move_agents()
-        obs = self.store
+    def step(self, action=None):
 
-        # additional agents enter
-        agents = Agent.gen_agents(ts)
-        self.store.get_enter_agents(agents)
+        state = None
+        rewards = None
 
-        return obs, rewards, False, {}
+        for ts in range(self.stepsize):
+            self.store.print_state()
+            self.traffic.append(self.store.get_n_agents())
+            self.ts.append(self.curr_time)
+
+
+            # existing agents make choices
+            rewards = self.store.shop_agents(self.verbose)
+
+            # agents move across store
+            self.store.move_agents(self.curr_time)
+
+            # get state
+            state = self.store.get_state_dict()
+            # calculate rewards
+            self.rewards.increment(rewards)
+
+            # additional agents enter
+            agents = Agent.gen_agents(self.curr_time)
+            self.store.get_enter_agents(agents)
+
+
+
+            self.curr_time += self.timedelta
+
+        if self.curr_time > self.end_dt:
+            done = True
+        else:
+            done = False
+
+        return state, rewards, done, {}
 
 
     def main(self, recommender=None):
-        curr_time = self.start_dt
+
         step_cntr = 0
         eps_rewards = {}
+        done = False
 
-        while curr_time < self.end_dt:
+        while not done:
 
-            print(f"Simulating step: {step_cntr}, {curr_time}")
+            print(f"Simulating step: {step_cntr}, {self.curr_time}")
             # TODO: Insert action logic here
 
-            self.store.print_state()
-            obs, rewards, _, _ = self.step(curr_time)
+
+            obs, rewards, done, info = self.step()
             if self.verbose:
                 print("Sold:", rewards)
 
-            eps_rewards = self.increment_rewards(eps_rewards, rewards)
 
             """self.buffer.add(
                 (
@@ -87,26 +123,12 @@ class Simulator(gym.Env):
 
                 )
             )"""
-
-            curr_time += self.timedelta
             step_cntr += 1
         #self.buffer.to_csv("output.csv")
-        plt_cumulative_rewards(eps_rewards, show=True)
+        plt_cumulative_rewards(self.rewards.todict(), show=True)
+        plot_traffic(self.ts, self.traffic, show=True)
 
 
-
-    @staticmethod
-    def increment_rewards(agg, new):
-        if not agg:
-            agg = {}
-
-        for k, v in new.items():
-            if k not in agg:
-                agg[k] = []
-            else:
-                agg[k].append(v)
-
-        return agg
 
 
     @classmethod
