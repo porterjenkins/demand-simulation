@@ -15,6 +15,7 @@ class InventoryProduct(object):
 
     def increment(self):
         self.quantity += 1
+
     def decrement(self):
         if self.quantity >= 1:
             self.quantity -= 1
@@ -32,7 +33,7 @@ class Inventory(object):
         self.n_prods = len(products)
         self.n_slots = n_slots
         self.inv = {}
-        self.max_per_slot
+        self.max_per_slot = max_per_slot
 
         for slot_id in range(n_slots):
 
@@ -85,15 +86,30 @@ class Inventory(object):
 
         return np.array(state), names
 
-    def restock(self):
+    def restock(self, action):
         """
-        Max Capcity is all available slots x max_per_slot
 
-        :param action_dict: slots per product
+        :param action: (dict) action dictionary
+            Schema:
+                {
+                    {prod1}: q1,
+                    {prod2}: q2,
+                    ...
+                    {prodn}: qn,
+                }
         :return:
         """
-        for _, v in self.inv.items():
-            v.restock(self.max_per_slot)
+
+        idx = 0
+        inv = {}
+        for prod, q in action.items():
+            for slot in range(q):
+                prod_inv = InventoryProduct(prod, quantity=self.max_per_slot)
+                inv[idx] = prod_inv
+                idx += 1
+
+        self.inv = inv
+
 
     def decrement(self, product):
 
@@ -113,7 +129,6 @@ class Inventory(object):
 
 class CoolerDisplay(object):
 
-
     def __init__(self, n_slots, max_per_slot, products, region, name=None):
         self.id = uuid4()
         self.n_slots = n_slots
@@ -130,6 +145,25 @@ class CoolerDisplay(object):
     def _get_init_inventory(n_slots, max_per_slot, products):
         inv = Inventory(n_slots, max_per_slot, products)
         return inv
+
+    def _is_valid_restock(self, action):
+        num_alloc = 0
+        for k, v in action.items():
+            num_alloc += v
+
+        if num_alloc <= self.n_slots:
+            return True
+        else:
+            return False
+
+    def restock(self, action):
+        """
+
+        :param action: (Dict) action dictionary with product name keys, and quantity as values
+        :return:
+        """
+        assert self._is_valid_restock(action)
+        self.inventory.restock(action)
 
     def get_state_mtx(self):
         return self.inventory.get_state_mtx()
