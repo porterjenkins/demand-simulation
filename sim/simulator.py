@@ -81,8 +81,6 @@ class Simulator(gym.Env):
             agents = Agent.gen_agents(self.curr_time)
             self.store.get_enter_agents(agents)
 
-
-
             self.curr_time += self.timedelta
 
         if self.curr_time > self.end_dt:
@@ -124,6 +122,9 @@ class Simulator(gym.Env):
                 )
             )"""
             step_cntr += 1
+
+            CoolerDisplay._restock_coolers()
+
         #self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)
         plot_traffic(self.ts, self.traffic, show=True)

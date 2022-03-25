@@ -15,6 +15,7 @@ class InventoryProduct(object):
 
     def increment(self):
         self.quantity += 1
+
     def decrement(self):
         if self.quantity >= 1:
             self.quantity -= 1
@@ -85,15 +86,38 @@ class Inventory(object):
 
         return np.array(state), names
 
-    def restock(self):
-        """
-        Max Capcity is all available slots x max_per_slot
+    def restock(self, product_with_counts_dict):
 
-        :param action_dict: slots per product
-        :return:
         """
-        for _, v in self.inv.items():
-            v.restock(self.max_per_slot)
+        Max Capacity is all available slots x max_per_slot
+
+        :param product_with_counts_dict: slots per product
+        :return: update_dict: new state after changes
+        """
+        # Input
+        # product_with_counts_dict = {"coca_cola": 5, "sprite": 1}
+        # n_slots = 6
+        # max_per_slot = 4
+
+        updated_state = {}
+        inventory = {}
+
+        updated_state["n_slots"] = self.n_slots
+        updated_state["max_per_slot"] = self.max_per_slot
+
+        for key in product_with_counts_dict:
+            items = {"Slots": product_with_counts_dict[key], "Items": (product_with_counts_dict[key] * max_per_slot)}
+            inventory[key] = items
+            updated_state["Inventory"] = inventory
+
+        print(updated_state)
+
+        # Output
+        # {'n_slots': 6, 'max_per_slot': 4,
+        # 'Inventory': {'coca_cola': {'Slots': 5, 'Items': 20},
+        #               'sprite': {'Slots': 1, 'Items': 4}
+        #               }
+        #       }
 
     def decrement(self, product):
 
@@ -113,7 +137,6 @@ class Inventory(object):
 
 class CoolerDisplay(object):
 
-
     def __init__(self, n_slots, max_per_slot, products, region, name=None):
         self.id = uuid4()
         self.n_slots = n_slots
@@ -130,6 +153,9 @@ class CoolerDisplay(object):
     def _get_init_inventory(n_slots, max_per_slot, products):
         inv = Inventory(n_slots, max_per_slot, products)
         return inv
+
+    def _restock_coolers(self):
+        Inventory.restock(self, object)
 
     def get_state_mtx(self):
         return self.inventory.get_state_mtx()
