@@ -169,7 +169,7 @@ class Store(object):
     def get_n_agents(self):
         return len(self.agents)
 
-    def take_actions(self, actions):
+    def take_actions(self, actions, verbose=False):
         """
         perform action at each display with dictionary input
 
@@ -189,12 +189,14 @@ class Store(object):
         for a in actions:
             reg = self.regions[a['region']]
             for d in reg.displays:
-                print("**BEFORE")
-                d.print_state()
+                if verbose:
+                    print("**BEFORE")
+                    d.print_state()
                 if d.name == a['display']:
                    d.restock(a["action"])
-                print("**AFTER")
-                d.print_state()
+                if verbose:
+                    print("**AFTER")
+                    d.print_state()
 
 
 

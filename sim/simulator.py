@@ -42,8 +42,8 @@ DEFAULT_ACTION = [
             }
         },
     {
-            "region": "deli",
-            "display": "deli-cooler",
+            "region": "dairy",
+            "display": "dairy-cooler",
             "action": {
                 "coca_cola_20oz_bottle": 4,
                 "dr_pepper_20oz_bottle": 0,
@@ -128,7 +128,7 @@ class Simulator(gym.Env):
             done = False
 
 
-        self.store.take_actions(actions=action)
+        self.store.take_actions(actions=action, verbose=self.verbose)
 
         return state, rewards, done, {}
 
