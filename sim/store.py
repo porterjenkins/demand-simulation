@@ -169,6 +169,35 @@ class Store(object):
     def get_n_agents(self):
         return len(self.agents)
 
+    def take_actions(self, actions):
+        """
+        perform action at each display with dictionary input
+
+        :param actions: List(Dict) list of action dictionaries:
+            {
+                "region": {region_name}
+                "display" {display_name},
+                "action": {
+                    {prod1}: {q1},
+                    {prod2}: {q2},
+                    ...
+                    {prod_n}: {q_n},
+                }
+        :return: None
+        """
+
+        for a in actions:
+            reg = self.regions[a['region']]
+            for d in reg.displays:
+                print("**BEFORE")
+                d.print_state()
+                if d.name == a['display']:
+                   d.restock(a["action"])
+                print("**AFTER")
+                d.print_state()
+
+
+
 
     @staticmethod
     def norm_trans_mtx(adj_mtx, trans_mtx):

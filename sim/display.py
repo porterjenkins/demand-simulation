@@ -33,7 +33,7 @@ class Inventory(object):
         self.n_prods = len(products)
         self.n_slots = n_slots
         self.inv = {}
-        self.max_per_slot
+        self.max_per_slot = max_per_slot
 
         for slot_id in range(n_slots):
 
@@ -86,33 +86,29 @@ class Inventory(object):
 
         return np.array(state), names
 
-    def restock(self, product_with_counts_dict):
+    def restock(self, action):
+        """
 
+        :param action: (dict) action dictionary
+            Schema:
+                {
+                    {prod1}: q1,
+                    {prod2}: q2,
+                    ...
+                    {prodn}: qn,
+                }
+        :return:
+        """
 
-        # Input
-        # product_with_counts_dict = {"coca_cola": 5, "sprite": 1}
-        # n_slots = 6
-        # max_per_slot = 4
+        idx = 0
+        inv = {}
+        for prod, q in action.items():
+            for slot in range(q):
+                prod_inv = InventoryProduct(prod, quantity=self.max_per_slot)
+                inv[idx] = prod_inv
+                idx += 1
 
-        updated_state = {}
-        inventory = {}
-
-        updated_state["n_slots"] = self.n_slots
-        updated_state["max_per_slot"] = self.max_per_slot
-
-        for key in product_with_counts_dict:
-            items = {"Slots": product_with_counts_dict[key], "Items": (product_with_counts_dict[key] * max_per_slot)}
-            inventory[key] = items
-            updated_state["Inventory"] = inventory
-
-        print(updated_state)
-
-        # Output
-        # {'n_slots': 6, 'max_per_slot': 4,
-        # 'Inventory': {'coca_cola': {'Slots': 5, 'Items': 20},
-        #               'sprite': {'Slots': 1, 'Items': 4}
-        #               }
-        #       }
+        self.inv = inv
 
 
     def decrement(self, product):
@@ -150,8 +146,24 @@ class CoolerDisplay(object):
         inv = Inventory(n_slots, max_per_slot, products)
         return inv
 
-    def _restock_coolers(self):
-        Inventory.restock(self, object)
+    def _is_valid_restock(self, action):
+        num_alloc = 0
+        for k, v in action.items():
+            num_alloc += v
+
+        if num_alloc <= self.n_slots:
+            return True
+        else:
+            return False
+
+    def restock(self, action):
+        """
+
+        :param action: (Dict) action dictionary with product name keys, and quantity as values
+        :return:
+        """
+        assert self._is_valid_restock(action)
+        self.inventory.restock(action)
 
     def get_state_mtx(self):
         return self.inventory.get_state_mtx()

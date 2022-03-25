@@ -1,10 +1,10 @@
 time:
   start: 2021-05-24 14:00:00
-  end: 2021-05-26 13:00:00
+  end: 2021-05-31 13:00:00
   timedelta:
     unit: hour # assume hours for now
     resolution: 1
-    step: 4
+    step: 12
 store:
   adj:
     - [1, 1, 0]

@@ -16,6 +16,45 @@ from buffer import Buffer
 
 from visualizer import plt_cumulative_rewards, plot_traffic
 
+DEFAULT_ACTION = [
+    {
+        "region": "deli",
+        "display": "deli-cooler",
+        "action": {
+            "coca_cola_20oz_bottle": 4,
+            "dr_pepper_20oz_bottle": 0,
+            "diet_coke_20oz_bottle": 0,
+            "sprite_20oz_bottle": 0,
+            "Monster_16oz_can": 4
+
+        }
+    },
+    {
+            "region": "entrance",
+            "display": "entrance-cooler",
+            "action": {
+                "coca_cola_20oz_bottle": 4,
+                "dr_pepper_20oz_bottle": 0,
+                "diet_coke_20oz_bottle": 0,
+                "sprite_20oz_bottle": 0,
+                "Monster_16oz_can": 4
+
+            }
+        },
+    {
+            "region": "deli",
+            "display": "deli-cooler",
+            "action": {
+                "coca_cola_20oz_bottle": 4,
+                "dr_pepper_20oz_bottle": 0,
+                "diet_coke_20oz_bottle": 0,
+                "sprite_20oz_bottle": 0,
+                "Monster_16oz_can": 4
+
+            }
+        }
+]
+
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
@@ -88,6 +127,9 @@ class Simulator(gym.Env):
         else:
             done = False
 
+
+        self.store.take_actions(actions=action)
+
         return state, rewards, done, {}
 
 
@@ -103,7 +145,7 @@ class Simulator(gym.Env):
             # TODO: Insert action logic here
 
 
-            obs, rewards, done, info = self.step()
+            obs, rewards, done, info = self.step(DEFAULT_ACTION)
             if self.verbose:
                 print("Sold:", rewards)
 
@@ -123,7 +165,7 @@ class Simulator(gym.Env):
             )"""
             step_cntr += 1
 
-            CoolerDisplay._restock_coolers()
+
 
         #self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)
