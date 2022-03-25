@@ -12,6 +12,7 @@ def plt_cumulative_rewards(eps_rewards, fname='step-plt.png', show=False):
         ncols=1,
         figsize=(12, 8),
         sharex=True,
+        sharey=True
     )
 
     i = 0
