@@ -88,12 +88,7 @@ class Inventory(object):
 
     def restock(self, product_with_counts_dict):
 
-        """
-        Max Capacity is all available slots x max_per_slot
 
-        :param product_with_counts_dict: slots per product
-        :return: update_dict: new state after changes
-        """
         # Input
         # product_with_counts_dict = {"coca_cola": 5, "sprite": 1}
         # n_slots = 6
@@ -118,6 +113,7 @@ class Inventory(object):
         #               'sprite': {'Slots': 1, 'Items': 4}
         #               }
         #       }
+
 
     def decrement(self, product):
 
