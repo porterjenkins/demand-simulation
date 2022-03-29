@@ -2,6 +2,9 @@
 
 class Buffer(object):
 
+    # Practice pull request.
+    # Just to make sure I do it right
+
     def __init__(self):
         self.data = []
         self.headers = [
