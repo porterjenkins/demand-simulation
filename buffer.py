@@ -33,3 +33,6 @@ class Buffer(object):
                 line = '","'.join(row)
                 line = f'"{line}"\n'
                 stream.write(line)
+
+                # Practice pull request.
+                # Just to make sure I do it right
