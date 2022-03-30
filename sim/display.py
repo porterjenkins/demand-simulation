@@ -141,6 +141,12 @@ class CoolerDisplay(object):
     def __str__(self):
         return self.name
 
+    def _get_region(self):
+        return self.region
+
+    def _get_name(self):
+        return self.name
+
     @staticmethod
     def _get_init_inventory(n_slots, max_per_slot, products):
         inv = Inventory(n_slots, max_per_slot, products)

@@ -5,19 +5,18 @@ class Buffer(object):
     def __init__(self):
         self.data = []
         self.headers = [
-            "quantity",
-            "day",
-            "product",
-            "display_id",
-            "price",
-            "display_loc",
-            "products_on_display",
-            "nearby_displays"
+            "Quantity_Sold",
+            "Display_Name",
+            "Region_Name",
+            "Before_Restock",
+            "After_Restock"
         ]
-
 
     def add(self, tup):
         self.data.append(tup)
+
+    def add(self, q_sold, display_name, region_name, before_restock, after_restock):
+        self.data.append((q_sold, display_name, region_name, before_restock, after_restock))
 
     def to_csv(self, fname, headers=True):
         with open(fname, "w") as stream:

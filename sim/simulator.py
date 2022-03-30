@@ -8,7 +8,7 @@ from sim import cfg
 from sim.store import Store
 from sim.prior import Prior, Params, DisplayLocations
 from sim.agent import Agent
-from sim.display import CoolerDisplay
+from sim.display import CoolerDisplay, Inventory
 from sim.rewards import Rewards
 
 from buffer import Buffer
@@ -163,11 +163,19 @@ class Simulator(gym.Env):
 
                 )
             )"""
+
+            data_tuple = [Inventory.get_total_quantity(),
+                          CoolerDisplay._get_region(),
+                          CoolerDisplay._get_name(),
+                          CoolerDisplay.get_slot_counts(),
+                          # Not sure where the restock is being called
+                          # Need to do the restock first then find the counts
+                          CoolerDisplay.get_slot_counts()]
+
+            self.buffer.add(data_tuple)
             step_cntr += 1
 
-
-
-        #self.buffer.to_csv("output.csv")
+        self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)
         plot_traffic(self.ts, self.traffic, show=True)
 
