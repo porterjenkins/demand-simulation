@@ -3,7 +3,8 @@ import numpy as np
 import datetime
 import yaml
 
-from sim import cfg
+# from sim import cfg
+from . import cfg
 
 from sim.store import Store
 from sim.prior import Prior, Params, DisplayLocations
@@ -59,7 +60,6 @@ class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
 
     def __init__(self, start_dt, end_dt, store, verbose=False):
-
         self.start_dt = start_dt
         self.end_dt = end_dt
         self.store = store
@@ -134,43 +134,38 @@ class Simulator(gym.Env):
 
 
     def main(self, recommender=None):
-
         step_cntr = 0
         eps_rewards = {}
         done = False
 
         while not done:
-
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
-            # TODO: Insert action logic here
 
-
+            state_bef = self.store.get_state_dict()
             obs, rewards, done, info = self.step(DEFAULT_ACTION)
+
+            state_af = self.store.get_state_dict()
             if self.verbose:
                 print("Sold:", rewards)
 
+            # the count of the number of slots on display prior to observing
+            # sales at time t. e,g., [2, 3, 0, 1]. This will be one component 
+            # for each product.
 
-            """self.buffer.add(
-                (
-                    q,
-                    day,
-                    p,
-                    d,
-                    prices[p],
-                    disp_loc.value,
-                    self._stringify_list(product_disp_set),
-                    self._stringify_list(self.prior.params.disp_nbr_map[d])
 
-                )
-            )"""
+            # the restock action taken: another vector of slot counts: [0, 1, 1, 3]. 
+            # This will be one component for each product.
+            # restock_amounts = []
+            # for prev_count, new_count in zip(old_slot, slot):
+            #     restock_amounts.append(new_count - prev_count)
 
-            data_tuple = [Inventory.get_total_quantity(),
+            data_tuple = (Inventory.get_total_quantity(),
                           CoolerDisplay._get_region(),
                           CoolerDisplay._get_name(),
                           CoolerDisplay.get_slot_counts(),
                           # Not sure where the restock is being called
                           # Need to do the restock first then find the counts
-                          CoolerDisplay.get_slot_counts()]
+                          CoolerDisplay.get_slot_counts())
 
             self.buffer.add(data_tuple)
             step_cntr += 1
@@ -178,8 +173,6 @@ class Simulator(gym.Env):
         self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)
         plot_traffic(self.ts, self.traffic, show=True)
-
-
 
 
     @classmethod

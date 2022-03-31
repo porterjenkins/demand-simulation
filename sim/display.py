@@ -26,6 +26,39 @@ class InventoryProduct(object):
         self.quantity = q
 
 
+# {
+#     'n_slots': 6, 
+#     'max_per_slot': 4, 
+#     'Inventory': {
+#         0: {
+#             'name': 'coke', 
+#             'quantity': 20
+#         }, 
+#         1: {
+#             'name': 'sprite', 
+#             'quantity': 4
+#         }
+#         2: {
+#             'name': 'sprite', 
+#             'quantity': 4
+#         }
+#         3: {
+#             'name': 'sprite', 
+#             'quantity': 4
+#         }
+#         4: {
+#             'name': 'sprite', 
+#             'quantity': 4
+#         }
+#         5: {
+#             'name': 'sprite', 
+#             'quantity': 4
+#         }
+#     }
+# }
+
+[20, 4]
+
 class Inventory(object):
 
     def __init__(self, n_slots, max_per_slot, products):
