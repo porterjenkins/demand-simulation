@@ -142,30 +142,47 @@ class Simulator(gym.Env):
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
 
             state_bef = self.store.get_state_dict()
+            print(state_bef)
             obs, rewards, done, info = self.step(DEFAULT_ACTION)
 
-            state_af = self.store.get_state_dict()
             if self.verbose:
                 print("Sold:", rewards)
 
-            # the count of the number of slots on display prior to observing
-            # sales at time t. e,g., [2, 3, 0, 1]. This will be one component 
-            # for each product.
+            # {
+            #     "display_name": {
+            #         0: {
+            #             name: "",
+            #             quantity: 0,
+            #         },
+            #         1: {
+            #             name: "",
+            #             quantity: 0,
+            #         },
+            #     }
+            # }
+            state_after = self.store.get_state_dict()
+            print(state_after)
+            
+            regions = self.store.regions
+            displays = [display for region in regions.values() for display in region.displays]
+            # inventories = [product for display in displays for product_key, product in display.inv.items()]
+            for region in regions.values():
+                region_name = region.name
+                for display in region.displays:
+                    display_name = display.name
+                    before_restock = [q for product, q in state_bef[display_name].values()]
+                    after_restock = [q for product, q in state_after[display_name].values()]
+                    for product_key, product in display.inventory.inv.items():
+                        q_sold = product.quantity - state_bef[display_name][product_key][1]
 
-
-            # the restock action taken: another vector of slot counts: [0, 1, 1, 3]. 
-            # This will be one component for each product.
-            # restock_amounts = []
-            # for prev_count, new_count in zip(old_slot, slot):
-            #     restock_amounts.append(new_count - prev_count)
-
-            data_tuple = (Inventory.get_total_quantity(),
-                          CoolerDisplay._get_region(),
-                          CoolerDisplay._get_name(),
-                          state_bef,
-                          state_af)
-
-            self.buffer.add(data_tuple)
+                        self.buffer.add(
+                            q_sold,
+                            display_name,
+                            region_name,
+                            before_restock,
+                            after_restock,
+                        )
+                    
             step_cntr += 1
 
         self.buffer.to_csv("output.csv")

@@ -57,7 +57,6 @@ class InventoryProduct(object):
 #     }
 # }
 
-[20, 4]
 
 class Inventory(object):
 
