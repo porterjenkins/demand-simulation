@@ -162,10 +162,8 @@ class Simulator(gym.Env):
             data_tuple = (Inventory.get_total_quantity(),
                           CoolerDisplay._get_region(),
                           CoolerDisplay._get_name(),
-                          CoolerDisplay.get_slot_counts(),
-                          # Not sure where the restock is being called
-                          # Need to do the restock first then find the counts
-                          CoolerDisplay.get_slot_counts())
+                          state_bef,
+                          state_af)
 
             self.buffer.add(data_tuple)
             step_cntr += 1
