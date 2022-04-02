@@ -12,6 +12,19 @@ class Buffer(object):
             "After_Restock"
         ]
 
+    def get_tuple(self, ts, rewards, state, action):
+        """
+            Translate the reward, state, and action dicts into a tuple to add to the buffer
+
+        :param ts: (Datetime) timestamp
+        :param rewards: List[Dict]: list of reward dictionaries
+        :param state: (Dict) state dict of store
+        :param action: (Dict) Action dict
+        :return:
+        """
+        # TODO: Implement this function to transform into a tuple
+        return None
+
     def add(self, tup):
         self.data.append(tup)
 

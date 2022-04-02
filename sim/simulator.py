@@ -3,8 +3,8 @@ import numpy as np
 import datetime
 import yaml
 
-# from sim import cfg
-from . import cfg
+from sim import cfg
+#from . import cfg
 
 from sim.store import Store
 from sim.prior import Prior, Params, DisplayLocations
@@ -96,8 +96,11 @@ class Simulator(gym.Env):
 
     def step(self, action=None):
 
-        state = None
-        rewards = None
+
+        rewards = []
+
+        # get state
+        state = self.store.get_state_dict()
 
         for ts in range(self.stepsize):
             self.store.print_state()
@@ -106,15 +109,16 @@ class Simulator(gym.Env):
 
 
             # existing agents make choices
-            rewards = self.store.shop_agents(self.verbose)
+            rewards.append(
+                self.store.shop_agents(self.verbose)
+            )
 
             # agents move across store
             self.store.move_agents(self.curr_time)
 
-            # get state
-            state = self.store.get_state_dict()
+
             # calculate rewards
-            self.rewards.increment(rewards)
+            self.rewards.increment(rewards[-1])
 
             # additional agents enter
             agents = Agent.gen_agents(self.curr_time)
@@ -140,10 +144,8 @@ class Simulator(gym.Env):
 
         while not done:
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
-
-            state_bef = self.store.get_state_dict()
-            print(state_bef)
-            obs, rewards, done, info = self.step(DEFAULT_ACTION)
+            obs_time = self.curr_time
+            state, rewards, done, info = self.step(DEFAULT_ACTION)
 
             if self.verbose:
                 print("Sold:", rewards)
@@ -160,10 +162,20 @@ class Simulator(gym.Env):
             #         },
             #     }
             # }
-            state_after = self.store.get_state_dict()
-            print(state_after)
+
+
+            tuple = self.buffer.get_tuple(
+                ts=obs_time,
+                rewards=rewards,
+                state=state,
+                action=DEFAULT_ACTION
+            )
+
+            self.buffer.add(tuple)
+
+
             
-            regions = self.store.regions
+            """regions = self.store.regions
             displays = [display for region in regions.values() for display in region.displays]
             # inventories = [product for display in displays for product_key, product in display.inv.items()]
             for region in regions.values():
@@ -181,7 +193,7 @@ class Simulator(gym.Env):
                             region_name,
                             before_restock,
                             after_restock,
-                        )
+                        )"""
                     
             step_cntr += 1
 
