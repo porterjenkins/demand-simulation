@@ -144,11 +144,12 @@ class Store(object):
                     if disp.name not in rewards:
                         rewards[disp.name] = {}
                     if action not in rewards[disp.name]:
-                        rewards[disp.name][action] = 0
-                        rewards[disp.name]["q_sold"] = 0
+                        rewards[disp.name][action] = {}
+                        rewards[disp.name][action]["total_sales"] = 0
+                        rewards[disp.name][action]["q_sold"] = 0
 
-                    rewards[disp.name][action] += price
-                    rewards[disp.name]["q_sold"] += 1
+                    rewards[disp.name][action]["total_sales"] += price
+                    rewards[disp.name][action]["q_sold"] += 1
 
 
 

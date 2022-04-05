@@ -139,12 +139,19 @@ class Simulator(gym.Env):
 
             # datetime, quantity_sold, num_slots, product, price, revenue, region, display
             # Loop over all regions
-            # Loop over all displays
-            # Loop over all products
-            for p in []:
-                tup = (obs_time)
-                self.buffer.add(tup)
-
+            for reward in rewards:
+                # Loop over all displays
+                for display, products in reward.items():
+                    # Loop over all products
+                    for product_name, product in products.items():
+                        price = cfg.get_price_by_product(product_name)
+                        q_sold = product["q_sold"]
+                        total_sales = product["total_sales"]
+                        slots = next(q for d, q in state_before[display].values() if d == product_name)
+                        # tup = (obs_time, q_sold, slots, product_name, price, total_sales, "region", display)
+                        self.buffer.add(obs_time, q_sold, slots, product_name, price, total_sales, "region", display)
+                        # self.buffer.add(tup)
+                    
             step_cntr += 1
 
         self.buffer.to_csv("output.csv")
