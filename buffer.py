@@ -5,21 +5,23 @@ class Buffer(object):
     def __init__(self):
         self.data = []
         self.headers = [
-            "Quantity_Sold",
-            "Display_Name",
-            "Region_Name",
-            "Before_Restock",
-            "After_Restock"
+            "datetime",
+            "quantity_sold",
+            "num_slots",
+            "product",
+            "price",
+            "revenue",
+            "region",
+            "display"
         ]
 
-    def get_tuple(self, ts, rewards, state, action):
+    def get_tuple(self, ts, rewards, state):
         """
             Translate the reward, state, and action dicts into a tuple to add to the buffer
 
         :param ts: (Datetime) timestamp
         :param rewards: List[Dict]: list of reward dictionaries
         :param state: (Dict) state dict of store
-        :param action: (Dict) Action dict
         :return:
         """
         # TODO: Implement this function to transform into a tuple
@@ -28,8 +30,8 @@ class Buffer(object):
     def add(self, tup):
         self.data.append(tup)
 
-    def add(self, q_sold, display_name, region_name, before_restock, after_restock):
-        self.data.append((q_sold, display_name, region_name, before_restock, after_restock))
+    def add(self, datetime, quantity_sold, num_slots, product, price, revenue, region, display):
+        self.data.append((datetime, quantity_sold, num_slots, product, price, revenue, region, display))
 
     def to_csv(self, fname, headers=True):
         with open(fname, "w") as stream:
