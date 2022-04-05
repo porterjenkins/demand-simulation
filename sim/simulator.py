@@ -23,47 +23,40 @@ from rewards import Rewards
 
 from buffer import Buffer
 
-
 from visualizer import plt_cumulative_rewards, plot_traffic
 
-DEFAULT_ACTION = [
-    {
-        "region": "deli",
-        "display": "deli-cooler",
-        "action": {
-            "coca_cola_20oz_bottle": 4,
-            "dr_pepper_20oz_bottle": 0,
-            "diet_coke_20oz_bottle": 0,
-            "sprite_20oz_bottle": 0,
-            "Monster_16oz_can": 4
+DEFAULT_ACTION = [{
+    "region": "deli",
+    "display": "deli-cooler",
+    "action": {
+        "coca_cola_20oz_bottle": 4,
+        "dr_pepper_20oz_bottle": 0,
+        "diet_coke_20oz_bottle": 0,
+        "sprite_20oz_bottle": 0,
+        "Monster_16oz_can": 4
+    }
+}, {
+    "region": "entrance",
+    "display": "entrance-cooler",
+    "action": {
+        "coca_cola_20oz_bottle": 4,
+        "dr_pepper_20oz_bottle": 0,
+        "diet_coke_20oz_bottle": 0,
+        "sprite_20oz_bottle": 0,
+        "Monster_16oz_can": 4
+    }
+}, {
+    "region": "dairy",
+    "display": "dairy-cooler",
+    "action": {
+        "coca_cola_20oz_bottle": 4,
+        "dr_pepper_20oz_bottle": 0,
+        "diet_coke_20oz_bottle": 0,
+        "sprite_20oz_bottle": 0,
+        "Monster_16oz_can": 4
+    }
+}]
 
-        }
-    },
-    {
-            "region": "entrance",
-            "display": "entrance-cooler",
-            "action": {
-                "coca_cola_20oz_bottle": 4,
-                "dr_pepper_20oz_bottle": 0,
-                "diet_coke_20oz_bottle": 0,
-                "sprite_20oz_bottle": 0,
-                "Monster_16oz_can": 4
-
-            }
-        },
-    {
-            "region": "dairy",
-            "display": "dairy-cooler",
-            "action": {
-                "coca_cola_20oz_bottle": 4,
-                "dr_pepper_20oz_bottle": 0,
-                "diet_coke_20oz_bottle": 0,
-                "sprite_20oz_bottle": 0,
-                "Monster_16oz_can": 4
-
-            }
-        }
-]
 
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
@@ -72,21 +65,15 @@ class Simulator(gym.Env):
         self.start_dt = start_dt
         self.end_dt = end_dt
         self.store = store
-        self.timedelta = datetime.timedelta(
-            hours=cfg.get_timedelta()
-        )
+        self.timedelta = datetime.timedelta(hours=cfg.get_timedelta())
         self.verbose = verbose
-        self.rewards = Rewards(
-            displays=cfg.get_display_names(),
-            products=cfg.get_product_names()
-        )
+        self.rewards = Rewards(displays=cfg.get_display_names(),
+                               products=cfg.get_product_names())
 
         self.curr_time = self.start_dt
         self.stepsize = cfg.get_step_size()
         self.traffic = []
         self.ts = []
-
-
 
         self.buffer = Buffer()
 
@@ -95,16 +82,12 @@ class Simulator(gym.Env):
         x[day] = 1.0
         return x
 
-
     def _stringify_list(self, l):
         l = [str(x) for x in l]
         s = ",".join(l)
         return "{" + s + "}"
 
-
-
     def step(self, action=None):
-
 
         rewards = []
 
@@ -116,15 +99,11 @@ class Simulator(gym.Env):
             self.traffic.append(self.store.get_n_agents())
             self.ts.append(self.curr_time)
 
-
             # existing agents make choices
-            rewards.append(
-                self.store.shop_agents(self.verbose)
-            )
+            rewards.append(self.store.shop_agents(self.verbose))
 
             # agents move across store
             self.store.move_agents(self.curr_time)
-
 
             # calculate rewards
             self.rewards.increment(rewards[-1])
@@ -140,11 +119,9 @@ class Simulator(gym.Env):
         else:
             done = False
 
-
         self.store.take_actions(actions=action, verbose=self.verbose)
 
         return state, rewards, done, {}
-
 
     def main(self, recommender=None):
         step_cntr = 0
@@ -154,75 +131,35 @@ class Simulator(gym.Env):
         while not done:
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
             obs_time = self.curr_time
+            state_before = self.store.get_state_dict()
             state, rewards, done, info = self.step(DEFAULT_ACTION)
 
             if self.verbose:
                 print("Sold:", rewards)
 
-            # {
-            #     "display_name": {
-            #         0: {
-            #             name: "",
-            #             quantity: 0,
-            #         },
-            #         1: {
-            #             name: "",
-            #             quantity: 0,
-            #         },
-            #     }
-            # }
+            # datetime, quantity_sold, num_slots, product, price, revenue, region, display
+            # Loop over all regions
+            # Loop over all displays
+            # Loop over all products
+            for p in []:
+                tup = (obs_time)
+                self.buffer.add(tup)
 
-
-            tuple = self.buffer.get_tuple(
-                ts=obs_time,
-                rewards=rewards,
-                state=state,
-                action=DEFAULT_ACTION
-            )
-
-            self.buffer.add(tuple)
-
-
-            
-            """regions = self.store.regions
-            displays = [display for region in regions.values() for display in region.displays]
-            # inventories = [product for display in displays for product_key, product in display.inv.items()]
-            for region in regions.values():
-                region_name = region.name
-                for display in region.displays:
-                    display_name = display.name
-                    before_restock = [q for product, q in state_bef[display_name].values()]
-                    after_restock = [q for product, q in state_after[display_name].values()]
-                    for product_key, product in display.inventory.inv.items():
-                        q_sold = product.quantity - state_bef[display_name][product_key][1]
-
-                        self.buffer.add(
-                            q_sold,
-                            display_name,
-                            region_name,
-                            before_restock,
-                            after_restock,
-                        )"""
-                    
             step_cntr += 1
 
         self.buffer.to_csv("output.csv")
         plt_cumulative_rewards(self.rewards.todict(), show=True)
         plot_traffic(self.ts, self.traffic, show=True)
 
-
     @classmethod
     def build_sim(cls):
 
-        store = Store(
-            adj_mtx=cfg.get_adj_mtx(),
-            trans_mtx=cfg.get_trans_mtx(),
-            region_dict=cfg.get_region_dict()
-        )
+        store = Store(adj_mtx=cfg.get_adj_mtx(),
+                      trans_mtx=cfg.get_trans_mtx(),
+                      region_dict=cfg.get_region_dict())
 
         displays = CoolerDisplay.build_displays_from_dict(
-            cfg.get_region_dict()
-        )
+            cfg.get_region_dict())
         store.add_displays_to_regions(displays)
 
         ts = cfg.get_start_time()
@@ -230,14 +167,11 @@ class Simulator(gym.Env):
 
         store.get_enter_agents(agents)
 
-        sim = Simulator(
-            start_dt=cfg.get_start_time(),
-            end_dt=cfg.get_end_time(),
-            store=store
-        )
+        sim = Simulator(start_dt=cfg.get_start_time(),
+                        end_dt=cfg.get_end_time(),
+                        store=store)
 
         return sim
-
 
 
 if __name__ == "__main__":

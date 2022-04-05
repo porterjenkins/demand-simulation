@@ -13,7 +13,6 @@ class Buffer(object):
             "revenue",
             "region",
             "display"
-
         ]
 
     def get_tuple(self, ts, rewards, state):
