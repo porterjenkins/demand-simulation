@@ -1,7 +1,6 @@
 import gym
 import numpy as np
 import datetime
-import yaml
 
 # from sim import cfg
 # #from . import cfg
@@ -16,12 +15,11 @@ from sim_cfg import SimCfg
 cfg = SimCfg("./cfg.yaml")
 
 from store import Store
-from prior import Prior, Params, DisplayLocations
 from agent import Agent
-from display import CoolerDisplay, Inventory
+from display import CoolerDisplay
 from rewards import Rewards
 
-from buffer import Buffer
+from sim.buffer import Buffer
 
 from visualizer import plt_cumulative_rewards, plot_traffic
 

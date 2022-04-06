@@ -1,4 +1,4 @@
-
+from sim import cfg
 
 class Buffer(object):
 
@@ -10,6 +10,7 @@ class Buffer(object):
             "display",
             "num_slots",
             "quantity_sold",
+            "price",
             "revenue"
         ]
 
@@ -82,12 +83,14 @@ class Buffer(object):
                         "total_sales": 0
                     }
                 )
+                price = cfg.get_price_by_product(prod)
                 t = [
                     str(ts),
                     prod,
                     disp,
                     cnt,
                     r['q_sold'],
+                    price,
                     r['total_sales']
                 ]
                 tup_list.append(t)

@@ -1,6 +1,6 @@
 import unittest
 
-from buffer import Buffer
+from sim.buffer import Buffer
 
 class TestBuffer(unittest.TestCase):
 
