@@ -2,8 +2,8 @@ import numpy as np
 
 from sim import cfg
 
-from prior import Prior
-from sim_utils import softmax
+from sim.prior import Prior
+from sim.sim_utils import softmax
 from uuid import uuid4
 import names
 import random

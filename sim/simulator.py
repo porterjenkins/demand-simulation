@@ -11,13 +11,11 @@ import datetime
 # from sim.display import CoolerDisplay, Inventory
 # from sim.rewards import Rewards
 
-from sim_cfg import SimCfg
-cfg = SimCfg("./cfg.yaml")
-
-from store import Store
-from agent import Agent
-from display import CoolerDisplay
-from rewards import Rewards
+from sim import cfg
+from sim.store import Store
+from sim.agent import Agent
+from sim.display import CoolerDisplay
+from sim.rewards import Rewards
 
 from sim.buffer import Buffer
 
@@ -97,16 +95,16 @@ class Simulator(gym.Env):
             self.traffic.append(self.store.get_n_agents())
             self.ts.append(self.curr_time)
 
-            # existing agents make choices
+            # existing recommenders make choices
             rewards.append(self.store.shop_agents(self.verbose))
 
-            # agents move across store
+            # recommenders move across store
             self.store.move_agents(self.curr_time)
 
             # calculate rewards
             self.rewards.increment(rewards[-1])
 
-            # additional agents enter
+            # additional recommenders enter
             agents = Agent.gen_agents(self.curr_time)
             self.store.get_enter_agents(agents)
 
@@ -121,14 +119,20 @@ class Simulator(gym.Env):
 
         return state, rewards, done, {}
 
-    def main(self, recommender=None):
+    def main(self, recommenders=None):
         step_cntr = 0
         eps_rewards = {}
         done = False
 
+        state = None
+
         while not done:
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
             obs_time = self.curr_time
+            if recommenders:
+                pass
+            else:
+                action = DEFAULT_ACTION
             state, rewards, done, info = self.step(DEFAULT_ACTION)
 
             if self.verbose:
@@ -168,5 +172,9 @@ class Simulator(gym.Env):
 
 if __name__ == "__main__":
     sim = Simulator.build_sim()
+
+    from recommenders.rand_reco import RandomRecommender
+
+
 
     sim.main()

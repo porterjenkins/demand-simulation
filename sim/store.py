@@ -88,7 +88,7 @@ class Store(object):
 
 
     def print_state(self):
-        # n agents
+        # n recommenders
         n_agents = self.get_n_agents()
         print("--" * 10)
         reg_cntr = dict(zip(list(self.regions.keys()), [0]*len(self.regions)))
@@ -98,7 +98,7 @@ class Store(object):
             bar = "".join(["X"]*cnt)
             print(f"\t{reg}: {bar}")
 
-        print(f"\ttotal agents: {n_agents}")
+        print(f"\ttotal recommenders: {n_agents}")
         print("--" * 10)
 
 
