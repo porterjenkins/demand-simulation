@@ -6,13 +6,11 @@ class Buffer(object):
         self.data = []
         self.headers = [
             "datetime",
-            "quantity_sold",
-            "num_slots",
             "product",
-            "price",
-            "revenue",
-            "region",
-            "display"
+            "display",
+            "num_slots",
+            "quantity_sold",
+            "revenue"
         ]
 
     @staticmethod
@@ -41,6 +39,22 @@ class Buffer(object):
         return output
 
 
+    @staticmethod
+    def get_sum_slots(state):
+        """
+
+        :param state: (Dic)
+        :return:
+        """
+        output = {}
+
+        for disp, cnts in state.items():
+            output[disp] = {}
+            for idx, tup in cnts.items():
+                if tup[0] not in output[disp]:
+                    output[disp][tup[0]] = 0
+                output[disp][tup[0]] += 1
+        return output
 
 
     def get_tuple(self, ts, rewards, state):
@@ -52,57 +66,40 @@ class Buffer(object):
         :param state: (Dict) state dict of store
         :return:
         """
-        # TODO: Implement this function to transform into a tuple
 
-        totals = {
-            "region": {
-                "display": {
-                    "product": {
-                        "name": "something",
-                        "price": 0,
-                        "slots": 0,
-                        "total_sales": 0,
+        rewards = self.get_sum_rewards(rewards)
+        slots = self.get_sum_slots(state)
+
+        tup_list = []
+
+        for disp, rew_dict in rewards.items():
+            dis_slots = slots[disp]
+            for prod, cnt in dis_slots.items():
+                r = rew_dict.get(
+                    prod,
+                    {
                         "q_sold": 0,
-                    },
-                }
-            }
-        }
+                        "total_sales": 0
+                    }
+                )
+                t = [
+                    str(ts),
+                    prod,
+                    disp,
+                    cnt,
+                    r['q_sold'],
+                    r['total_sales']
+                ]
+                tup_list.append(t)
 
-        self.get_sum_rewards(rewards)
-
-        for reward in rewards:
-            # Loop over all displays
-            for display, products in reward.items():
-                # Loop over all products
-                for product_name, product in products.items():
-                    region = product["region"]
-                    # check for region key in map, make if not exists
-
-                    # check for total[region][display], make if not exists
-
-                    # check for product: make if not exists
-                    prev_product = totals[region][display][product_name]
-                    if prev_product is None:
-                        totals[region][display][product_name] = {
-                            "name": product_name,
-                            "price": cfg.get_price_by_product(product_name),
-                            "slots": next(q for d, q in state_before[display].values() if d == product_name),
-                            "total_sales": product["total_sales"],
-                            "q_sold": product["q_sold"],
-                        }
-                    else:
-                        q_sold = prev_product["q_sold"]
-                        total_sales = prev_product["total_sales"]
-                        prev_product["q_sold"] += q_sold
-                        prev_product["total_sales"] += total_sales
-
-        return None
+        return tup_list
 
     def add(self, tup):
-        self.data.append(tup)
-
-    def add(self, datetime, quantity_sold, num_slots, product, price, revenue, region, display):
-        self.data.append((datetime, quantity_sold, num_slots, product, price, revenue, region, display))
+        if isinstance(tup, list):
+            for t in tup:
+                self.data.append(t)
+        else:
+            self.data.append(tup)
 
     def to_csv(self, fname, headers=True):
         with open(fname, "w") as stream:
