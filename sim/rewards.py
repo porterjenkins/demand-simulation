@@ -21,8 +21,8 @@ class Rewards(object):
             if disp in r_i:
                 for p in disp_dict.keys():
                     if p in r_i[disp]:
-                        price = r_i[disp][p]
-                        self.add_disp_product_rew(disp, p, price)
+                        r_i_dict = r_i[disp][p]
+                        self.add_disp_product_rew(disp, p, r_i_dict["total_sales"])
                     else:
                         self.add_disp_product_rew(disp, p, 0)
             else:

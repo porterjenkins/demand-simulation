@@ -17,8 +17,10 @@ def plt_cumulative_rewards(eps_rewards, fname='step-plt.png', show=False):
 
     i = 0
     for disp, disp_data in eps_rewards.items():
+        print(disp)
         for prod, ts in disp_data.items():
             cumsum = np.cumsum(ts)
+            print(f"Cumulative of {prod}: {cumsum.max()}")
             x = np.arange(len(cumsum))
             axs[i].plot(x, cumsum, label=prod)
             axs[i].set_title(disp)
