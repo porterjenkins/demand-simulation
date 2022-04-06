@@ -147,6 +147,7 @@ class Store(object):
                         rewards[disp.name][action] = {}
                         rewards[disp.name][action]["total_sales"] = 0
                         rewards[disp.name][action]["q_sold"] = 0
+                        rewards[disp.name][action]["region"] = disp.region
 
                     rewards[disp.name][action]["total_sales"] += price
                     rewards[disp.name][action]["q_sold"] += 1

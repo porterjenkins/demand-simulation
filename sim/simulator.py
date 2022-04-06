@@ -139,18 +139,61 @@ class Simulator(gym.Env):
 
             # datetime, quantity_sold, num_slots, product, price, revenue, region, display
             # Loop over all regions
+            totals = {
+                "region": {
+                    "display": {
+                        "product": {
+                            "name": "something",
+                            "price": 0,
+                            "slots": 0,
+                            "total_sales": 0,
+                            "q_sold": 0,
+                        },
+                    }
+                }
+            }
+                        
             for reward in rewards:
                 # Loop over all displays
                 for display, products in reward.items():
                     # Loop over all products
                     for product_name, product in products.items():
-                        price = cfg.get_price_by_product(product_name)
-                        q_sold = product["q_sold"]
-                        total_sales = product["total_sales"]
-                        slots = next(q for d, q in state_before[display].values() if d == product_name)
-                        # tup = (obs_time, q_sold, slots, product_name, price, total_sales, "region", display)
-                        self.buffer.add(obs_time, q_sold, slots, product_name, price, total_sales, "region", display)
-                        # self.buffer.add(tup)
+                        region = product["region"]
+                        # check for region key in map, make if not exists
+
+                        # check for total[region][display], make if not exists
+
+                        # check for product: make if not exists
+                        prev_product = totals[region][display][product_name]
+                        if prev_product is None:
+                            totals[region][display][product_name] = {
+                                "name": product_name,
+                                "price": cfg.get_price_by_product(product_name), 
+                                "slots": next(q for d, q in state_before[display].values() if d == product_name),
+                                "total_sales": product["total_sales"],
+                                "q_sold": product["q_sold"],
+                            }
+                        else:
+                            q_sold = prev_product["q_sold"]
+                            total_sales = prev_product["total_sales"]
+                            prev_product["q_sold"] += q_sold
+                            prev_product["total_sales"] += total_sales
+
+
+                        # price = cfg.get_price_by_product(product_name)
+                        # q_sold = product["q_sold"]
+                        # total_sales = product["total_sales"]
+                        # region = product["region"]
+                        # slots = next(q for d, q in state_before[display].values() if d == product_name)
+                        # # tup = (obs_time, q_sold, slots, product_name, price, total_sales, "region", display)
+                        # # self.buffer.add(tup)
+            
+            # Loop through each product in totals and log
+            self.buffer.add(obs_time, q_sold, slots, product_name, price, total_sales, region, display)
+            
+            # Main GOALS
+            # make sure product logs are unique for every timestamp bucket
+            # aggregate all product sales per display per region
                     
             step_cntr += 1
 
