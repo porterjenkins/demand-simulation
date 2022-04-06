@@ -4,7 +4,7 @@ time:
   timedelta:
     unit: hour # assume hours for now
     resolution: 1
-    step: 12
+    step: 4
 store:
   adj:
     - [1, 1, 0]
@@ -34,16 +34,16 @@ store:
 params:
   products:
     "coca_cola_20oz_bottle":
-      weight: 1.5
+      weight: 11.00
       price: 1.99
     "dr_pepper_20oz_bottle":
-      weight: 1.25
+      weight: 9.5
       price: .99
     "diet_coke_20oz_bottle":
-      weight: 1.0
+      weight: 10.25
       price: 1.99
     "sprite_20oz_bottle":
-      weight: 0.5
+      weight: 9.25 
       price: 1.99
     "Monster_16oz_can":
       weight: 10.0
