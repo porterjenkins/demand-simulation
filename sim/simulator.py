@@ -137,31 +137,13 @@ class Simulator(gym.Env):
             if self.verbose:
                 print("Sold:", rewards)
 
-            # datetime, quantity_sold, num_slots, product, price, revenue, region, display
-            # Loop over all regions
 
             tup_list = self.buffer.get_tuple(obs_time, rewards, state)
-
-
-                        # price = cfg.get_price_by_product(product_name)
-                        # q_sold = product["q_sold"]
-                        # total_sales = product["total_sales"]
-                        # region = product["region"]
-                        # slots = next(q for d, q in state_before[display].values() if d == product_name)
-                        # # tup = (obs_time, q_sold, slots, product_name, price, total_sales, "region", display)
-                        # # self.buffer.add(tup)
-            
-            # Loop through each product in totals and log
             self.buffer.add(tup_list)
-            
-            # Main GOALS
-            # make sure product logs are unique for every timestamp bucket
-            # aggregate all product sales per display per region
-                    
             step_cntr += 1
 
         self.buffer.to_csv("output.csv")
-        #plt_cumulative_rewards(self.rewards.todict(), show=True)
+        plt_cumulative_rewards(self.rewards.todict(), show=True)
         plot_traffic(self.ts, self.traffic, show=True)
 
     @classmethod
