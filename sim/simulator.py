@@ -129,7 +129,6 @@ class Simulator(gym.Env):
         while not done:
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
             obs_time = self.curr_time
-            state_before = self.store.get_state_dict()
             state, rewards, done, info = self.step(DEFAULT_ACTION)
 
             if self.verbose:
