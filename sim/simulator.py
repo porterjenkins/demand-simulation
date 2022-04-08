@@ -19,40 +19,10 @@ from sim.rewards import Rewards
 from sim.buffer import Buffer
 
 from state import State
+from recommenders import reco_manager
 
 from visualizer import plt_cumulative_rewards, plot_traffic
 
-DEFAULT_ACTION = [{
-    "region": "deli",
-    "display": "deli-cooler",
-    "action": {
-        "coca_cola_20oz_bottle": 4,
-        "dr_pepper_20oz_bottle": 0,
-        "diet_coke_20oz_bottle": 0,
-        "sprite_20oz_bottle": 0,
-        "Monster_16oz_can": 4
-    }
-}, {
-    "region": "entrance",
-    "display": "entrance-cooler",
-    "action": {
-        "coca_cola_20oz_bottle": 4,
-        "dr_pepper_20oz_bottle": 0,
-        "diet_coke_20oz_bottle": 0,
-        "sprite_20oz_bottle": 0,
-        "Monster_16oz_can": 4
-    }
-}, {
-    "region": "dairy",
-    "display": "dairy-cooler",
-    "action": {
-        "coca_cola_20oz_bottle": 4,
-        "dr_pepper_20oz_bottle": 0,
-        "diet_coke_20oz_bottle": 0,
-        "sprite_20oz_bottle": 0,
-        "Monster_16oz_can": 4
-    }
-}]
 
 
 class Simulator(gym.Env):
