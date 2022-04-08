@@ -16,8 +16,9 @@ from sim.store import Store
 from sim.agent import Agent
 from sim.display import CoolerDisplay
 from sim.rewards import Rewards
-
 from sim.buffer import Buffer
+
+from state import State
 
 from visualizer import plt_cumulative_rewards, plot_traffic
 
@@ -88,7 +89,9 @@ class Simulator(gym.Env):
         rewards = []
 
         # get state
-        state = self.store.get_state_dict()
+        state = State.fromdict(
+            self.store.get_state_dict()
+        )
 
         for ts in range(self.stepsize):
             self.store.print_state()
