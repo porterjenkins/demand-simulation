@@ -68,16 +68,16 @@ class Simulator(gym.Env):
             self.traffic.append(self.store.get_n_agents())
             self.ts.append(self.curr_time)
 
-            # existing recommenders make choices
+            # existing agents make choices
             rewards.append(self.store.shop_agents(self.verbose))
 
-            # recommenders move across store
+            # agents move across store
             self.store.move_agents(self.curr_time)
 
             # calculate rewards
             self.rewards.increment(rewards[-1])
 
-            # additional recommenders enter
+            # additional agents enter
             agents = Agent.gen_agents(self.curr_time)
             self.store.get_enter_agents(agents)
 
