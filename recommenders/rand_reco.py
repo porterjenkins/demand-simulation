@@ -31,21 +31,11 @@ class RandomRecommender(BaseRecommender):
 
         return action
 
-"""        prods = cfg.get_product_names()
-        disp = cfg.get_displays()[self.disp]
-        n_slots = disp["n_slots"]
 
-        used = 0
-        action = {}
-        while used < n_slots:
-            free = n_slots - used
-            p = np.random.choice(prods, size=1)[0]
-            q = np.random.uniform(0, p)
+    def add_reward(self, reward):
+        """
 
-            if p not in action:
-                action[p] = 0
-            action[p] += q
-
-            free += q
-
-"""
+        :param reward: (tuple)
+        :return:
+        """
+        pass
