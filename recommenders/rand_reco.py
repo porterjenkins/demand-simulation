@@ -8,7 +8,7 @@ from sim import cfg
 class RandomRecommender(BaseRecommender):
 
     def __init__(self, disp):
-        super(RandomRecommender).__init__(disp)
+        super(RandomRecommender, self).__init__(disp)
 
     def __call__(self, state, *args, **kwargs):
         prods = cfg.get_product_names()

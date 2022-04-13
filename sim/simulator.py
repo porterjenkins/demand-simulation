@@ -92,21 +92,27 @@ class Simulator(gym.Env):
 
         return state, rewards, done, {}
 
-    def main(self, recommenders=None):
+    def main(self, reco_manager):
+        """
+
+        :param reco_manager: (RecommendationManager)
+        :return:
+        """
         step_cntr = 0
         eps_rewards = {}
         done = False
 
-        state = None
+        state = State.fromdict(
+            self.store.get_state_dict()
+        )
 
         while not done:
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
             obs_time = self.curr_time
-            if recommenders:
-                pass
-            else:
-                action = DEFAULT_ACTION
-            state, rewards, done, info = self.step(DEFAULT_ACTION)
+
+            action = reco_manager(state)
+
+            state, rewards, done, info = self.step(action)
 
             if self.verbose:
                 print("Sold:", rewards)

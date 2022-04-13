@@ -47,7 +47,7 @@ class StaticRecommender(BaseRecommender):
     }
 
     def __init__(self, disp):
-        super(StaticRecommender).__init__(disp)
+        super(StaticRecommender, self).__init__(disp)
 
     def __call__(self, state, *args, **kwargs):
         return self.action

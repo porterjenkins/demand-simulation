@@ -1,4 +1,5 @@
 from sim import cfg
+import numpy as np
 
 class State(object):
 
@@ -6,6 +7,7 @@ class State(object):
     def __init__(self, disp, slot_cnts):
         self.disp = disp
         self.slot_cnts = slot_cnts
+        self.n_slots = np.sum(list(slot_cnts.values()))
 
     def get_slot_dict(self):
         return self.slot_cnts
