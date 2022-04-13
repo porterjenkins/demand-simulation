@@ -71,6 +71,14 @@ class SimCfg(object):
                 disp.append(self.get_disp_name(reg, d))
         return disp
 
+    def get_displays(self):
+        disp = []
+        for reg, reg_dict in self.cfg_dict["store"]["regions"].items():
+            for disp_name, disp_dta in reg_dict["displays"].items():
+                disp.append(
+                    {self.get_disp_name(reg, disp_name): disp_dta})
+        return disp
+
     def get_var_param(self):
         return self.cfg_dict["params"]["sigma"]
 

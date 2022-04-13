@@ -40,22 +40,7 @@ class Buffer(object):
         return output
 
 
-    @staticmethod
-    def get_sum_slots(state):
-        """
 
-        :param state: (Dic)
-        :return:
-        """
-        output = {}
-
-        for disp, cnts in state.items():
-            output[disp] = {}
-            for idx, tup in cnts.items():
-                if tup[0] not in output[disp]:
-                    output[disp][tup[0]] = 0
-                output[disp][tup[0]] += 1
-        return output
 
 
     def get_tuple(self, ts, rewards, state):
@@ -69,12 +54,11 @@ class Buffer(object):
         """
 
         rewards = self.get_sum_rewards(rewards)
-        slots = self.get_sum_slots(state)
 
         tup_list = []
 
         for disp, rew_dict in rewards.items():
-            dis_slots = slots[disp]
+            dis_slots = state[disp].get_slot_dict()
             for prod, cnt in dis_slots.items():
                 r = rew_dict.get(
                     prod,

@@ -11,49 +11,18 @@ import datetime
 # from sim.display import CoolerDisplay, Inventory
 # from sim.rewards import Rewards
 
-from sim_cfg import SimCfg
-cfg = SimCfg("./cfg.yaml")
-
-from store import Store
-from agent import Agent
-from display import CoolerDisplay
-from rewards import Rewards
-
+from sim import cfg
+from sim.store import Store
+from sim.agent import Agent
+from sim.display import CoolerDisplay
+from sim.rewards import Rewards
 from sim.buffer import Buffer
+
+from state import State
+from recommenders import reco_manager
 
 from visualizer import plt_cumulative_rewards, plot_traffic
 
-DEFAULT_ACTION = [{
-    "region": "deli",
-    "display": "deli-cooler",
-    "action": {
-        "coca_cola_20oz_bottle": 2,
-        "dr_pepper_20oz_bottle": 2,
-        "diet_coke_20oz_bottle": 2,
-        "sprite_20oz_bottle": 2,
-        "Monster_16oz_can": 2
-    }
-}, {
-    "region": "entrance",
-    "display": "entrance-cooler",
-    "action": {
-        "coca_cola_20oz_bottle": 2,
-        "dr_pepper_20oz_bottle": 2,
-        "diet_coke_20oz_bottle": 2,
-        "sprite_20oz_bottle": 2,
-        "Monster_16oz_can": 2
-    }
-}, {
-    "region": "dairy",
-    "display": "dairy-cooler",
-    "action": {
-        "coca_cola_20oz_bottle": 2,
-        "dr_pepper_20oz_bottle": 2,
-        "diet_coke_20oz_bottle": 2,
-        "sprite_20oz_bottle": 2,
-        "Monster_16oz_can": 2
-    }
-}]
 
 
 class Simulator(gym.Env):
@@ -90,7 +59,9 @@ class Simulator(gym.Env):
         rewards = []
 
         # get state
-        state = self.store.get_state_dict()
+        state = State.fromdict(
+            self.store.get_state_dict()
+        )
 
         for ts in range(self.stepsize):
             self.store.print_state()
@@ -121,15 +92,27 @@ class Simulator(gym.Env):
 
         return state, rewards, done, {}
 
-    def main(self, recommender=None):
+    def main(self, reco_manager):
+        """
+
+        :param reco_manager: (RecommendationManager)
+        :return:
+        """
         step_cntr = 0
         eps_rewards = {}
         done = False
 
+        state = State.fromdict(
+            self.store.get_state_dict()
+        )
+
         while not done:
             print(f"Simulating step: {step_cntr}, {self.curr_time}")
             obs_time = self.curr_time
-            state, rewards, done, info = self.step(DEFAULT_ACTION)
+
+            action = reco_manager(state)
+
+            state, rewards, done, info = self.step(action)
 
             if self.verbose:
                 print("Sold:", rewards)
@@ -168,5 +151,9 @@ class Simulator(gym.Env):
 
 if __name__ == "__main__":
     sim = Simulator.build_sim()
+
+    from recommenders.rand_reco import RandomRecommender
+
+
 
     sim.main()
