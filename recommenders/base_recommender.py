@@ -9,3 +9,7 @@ class BaseRecommender(object):
 
     def __call__(self, state, *args, **kwargs):
         pass
+
+    def update(self, tup):
+        """ transition tuple """
+        pass

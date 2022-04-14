@@ -117,9 +117,10 @@ class Simulator(gym.Env):
             if self.verbose:
                 print("Sold:", rewards)
 
-
             tup_list = self.buffer.get_tuple(obs_time, rewards, state)
+            reco_manager.update(tup_list)
             self.buffer.add(tup_list)
+
             step_cntr += 1
 
         self.buffer.to_csv("output.csv")

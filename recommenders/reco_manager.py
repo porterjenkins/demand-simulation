@@ -25,3 +25,8 @@ class RecommendationManager(object):
             }
             actions.append(act_dict)
         return actions
+
+    def update(self, tup_list):
+        for _, a in self.agents.items():
+            for t in tup_list:
+                a.update(t)
