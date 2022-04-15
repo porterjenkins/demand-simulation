@@ -68,10 +68,6 @@ class Simulator(gym.Env):
 
         rewards = []
 
-        # get state
-        state = State.fromdict(
-            self.store.get_state_dict()
-        )
 
         for ts in range(self.stepsize):
             self.store.print_state()
@@ -98,7 +94,12 @@ class Simulator(gym.Env):
         else:
             done = False
 
+
         self.store.take_actions(actions=action, verbose=self.verbose)
+
+        state = State.fromdict(
+            self.store.get_state_dict()
+        )
 
         return state, rewards, done, {}
 
