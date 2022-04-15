@@ -1,10 +1,10 @@
 time:
   start: 2021-05-01 12:00:00
-  end: 2021-05-02 23:00:00
+  end: 2021-05-31 23:00:00
   timedelta:
     unit: hour # assume hours for now
     resolution: 1
-    step: 4
+    step: 12
 store:
   adj:
     - [1, 1, 0]
@@ -46,7 +46,7 @@ params:
       weight: 1.0
       price: 1.99
     "Monster_16oz_can":
-      weight: 2.5
+      weight: 5.0
       price: 2.99
   price: -1.1
   sigma: 0.5

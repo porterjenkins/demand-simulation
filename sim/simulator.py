@@ -30,6 +30,7 @@ from visualizer import plt_cumulative_rewards, plot_traffic
 
 class Simulator(gym.Env):
     dt_format = "%Y-%m-%d"
+    runs_dir = './runs'
 
     def __init__(self, start_dt, end_dt, store, verbose=False):
         self.start_dt = start_dt
@@ -44,9 +45,11 @@ class Simulator(gym.Env):
         self.stepsize = cfg.get_step_size()
         self.traffic = []
         self.ts = []
-        self.sim_id = uuid4()
+        self.sim_id = str(uuid4())
         self.buffer = Buffer()
-        self.output_dir = f"./{self.sim_id}"
+        self.output_dir = os.path.join(self.runs_dir, self.sim_id)
+        if not os.path.exists(self.runs_dir):
+            os.mkdir(self.runs_dir)
         os.mkdir(self.output_dir)
         shutil.copy(cfg.cfg_path, os.path.join(self.output_dir, "cfg.yaml"))
 
@@ -59,6 +62,7 @@ class Simulator(gym.Env):
         l = [str(x) for x in l]
         s = ",".join(l)
         return "{" + s + "}"
+
 
     def step(self, action=None):
 
@@ -130,6 +134,8 @@ class Simulator(gym.Env):
             step_cntr += 1
 
         self.buffer.to_csv(os.path.join(self.output_dir, "output.csv"))
+        self.rewards.save(os.path.join(self.output_dir, "rewards.json"))
+
         plt_cumulative_rewards(
             self.rewards.todict(),
             show=False,

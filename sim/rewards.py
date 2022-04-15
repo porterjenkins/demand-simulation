@@ -1,4 +1,4 @@
-
+import json
 
 class Rewards(object):
 
@@ -29,8 +29,9 @@ class Rewards(object):
                 for p in disp_dict.keys():
                     self.add_disp_product_rew(disp, p, 0)
 
-
-
-
     def todict(self):
         return self._rewards
+
+    def save(self, fname):
+        with open(fname, "w") as f:
+            json.dump(self._rewards, f)
