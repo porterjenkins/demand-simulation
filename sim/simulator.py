@@ -1,6 +1,9 @@
 import gym
 import numpy as np
 import datetime
+from uuid import uuid4
+import os
+import shutil
 
 # from sim import cfg
 # #from . import cfg
@@ -41,8 +44,11 @@ class Simulator(gym.Env):
         self.stepsize = cfg.get_step_size()
         self.traffic = []
         self.ts = []
-
+        self.sim_id = uuid4()
         self.buffer = Buffer()
+        self.output_dir = f"./{self.sim_id}"
+        os.mkdir(self.output_dir)
+        shutil.copy(cfg.cfg_path, os.path.join(self.output_dir, "cfg.yaml"))
 
     def _day_of_week_features(self, day):
         x = np.zeros(7)
@@ -123,9 +129,18 @@ class Simulator(gym.Env):
 
             step_cntr += 1
 
-        self.buffer.to_csv("output.csv")
-        plt_cumulative_rewards(self.rewards.todict(), show=True)
-        plot_traffic(self.ts, self.traffic, show=True)
+        self.buffer.to_csv(os.path.join(self.output_dir, "output.csv"))
+        plt_cumulative_rewards(
+            self.rewards.todict(),
+            show=False,
+            fname=os.path.join(self.output_dir, "rewards.png")
+        )
+        plot_traffic(
+            self.ts,
+            self.traffic,
+            show=False,
+            fname=os.path.join(self.output_dir, "traffic.png")
+        )
 
     @classmethod
     def build_sim(cls):

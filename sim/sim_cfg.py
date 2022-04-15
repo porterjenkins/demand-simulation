@@ -5,6 +5,7 @@ import numpy as np
 class SimCfg(object):
 
     def __init__(self, cfg_path):
+        self.cfg_path = cfg_path
         with open(cfg_path, "r") as f:
             self.cfg_dict = yaml.safe_load(f)
 
