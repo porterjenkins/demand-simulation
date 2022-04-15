@@ -88,10 +88,11 @@ class Agent(object):
             n_agents,
             product_params,
             price_params,
+            no_choice_params,
             sigma,
             choice
     ):
-        glob_params = Prior.vectorize_params(product_params, price_params)
+        glob_params = Prior.vectorize_params(product_params, price_params, no_choice_params)
         ind_params = Prior.gen_ind_params(glob_params, sigma, n_agents)
         agents = {}
         for p in ind_params:
@@ -187,6 +188,7 @@ class Agent(object):
             n_agents=n_agents,
             product_params=cfg.get_prod_weight(),
             price_params=cfg.get_price_param(),
+            no_choice_params=cfg.get_nochoice_param(),
             sigma=cfg.get_var_param(),
             choice=cfg.get_choice_prob()
         )

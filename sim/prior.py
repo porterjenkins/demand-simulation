@@ -192,8 +192,8 @@ class Prior(object):
 
 
     @staticmethod
-    def vectorize_params(product_params, price_params):
-        n = len(product_params) + 1
+    def vectorize_params(product_params, price_params, no_choice_params):
+        n = len(product_params) + 2
         param_vec = np.zeros(n)
 
         i = 0
@@ -201,6 +201,7 @@ class Prior(object):
             param_vec[i] = float(v)
             i += 1
 
-        param_vec[i] = float(price_params)
+        param_vec[i] = float(no_choice_params)
+        param_vec[i+1] = float(price_params)
 
         return param_vec

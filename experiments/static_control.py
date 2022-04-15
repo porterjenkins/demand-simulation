@@ -31,4 +31,4 @@ def main(n_runs):
     print(ids)
 
 if __name__ == "__main__":
-    main(n_runs=5)
+    main(n_runs=1)

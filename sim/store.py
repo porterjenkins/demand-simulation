@@ -138,6 +138,8 @@ class Store(object):
 
                 if state_mtx.size > 0:
                     action = agent.action_select(state_mtx, names)
+                    if action == "nochoice":
+                        continue
                     disp.decrement(action)
                     price = cfg.get_price_by_product(action)
                     #rewards[disp.name][action] += price

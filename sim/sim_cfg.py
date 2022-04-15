@@ -53,6 +53,9 @@ class SimCfg(object):
     def get_price_param(self):
         return self.cfg_dict["params"]["price"]
 
+    def get_nochoice_param(self):
+        return self.cfg_dict["params"]["no_choice"]
+
     def get_adj_mtx(self):
         return np.array(self.cfg_dict["store"]["adj"])
 

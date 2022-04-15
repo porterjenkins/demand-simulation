@@ -87,15 +87,17 @@ class Inventory(object):
 
     def get_state_mtx(self):
         """
-            create a state matrix with dims (n_products x n_products+1)
-            the matrix is essentiall an identity matrix concatenated with a column vector of ones
+            create a state matrix with dims (n_products+1 x n_products+1)
+            the matrix is essentially an identity matrix concatenated with a column vector of ones
             each row "turns on" the product indicator and the price
+            we also include an additional row for the 'nochoice' option
                 [
-                    [1. 0. 0. 0. 0. 1.],
-                    [0. 1. 0. 0. 0. 1.],
-                    [0. 0. 1. 0. 0. 1.],
-                    [0. 0. 0. 1. 0. 1.],
-                    [0. 0. 0. 0. 1. 1.]
+                    [1. 0. 0. 0. 0. 0. 1.],
+                    [0. 1. 0. 0. 0. 0. 1.],
+                    [0. 0. 1. 0. 0. 0. 1.],
+                    [0. 0. 0. 1. 0. 0. 1.],
+                    [0. 0. 0. 0. 1. 0. 1.]
+                    [0. 0. 0. 0. 0. 1. 1.]
             ]
         :return:
         """
@@ -108,13 +110,21 @@ class Inventory(object):
 
         for name, q in prod_quant.items():
             idx = cfg.prod2idx[name]
-            state_vec = np.zeros(self.n_prods+1)
+            state_vec = np.zeros(self.n_prods+2)
             state_vec[idx] = 1.0 # turn on product
             state_vec[-1] = 1.0 # turn on price
 
             if q > 0:
                 state.append(state_vec)
                 names.append(name)
+
+        # nochoice option
+        state_vec = np.zeros(self.n_prods + 2)
+        state_vec[-1] = 1.0  # turn on price
+        state_vec[-2] = 1.0  # turn nochoice
+        state.append(state_vec)
+        names.append("nochoice")
+
 
         return np.array(state), names
 
