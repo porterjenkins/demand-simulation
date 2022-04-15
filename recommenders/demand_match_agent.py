@@ -18,22 +18,6 @@ class DemandMatchRecommender(BaseRecommender):
             n_products=len(prod2idx)
         )
 
-    def get_random(self, state, prods):
-        action = {}
-        for p in prods:
-            action[p] = 0
-
-        budget = state.n_slots
-
-        while budget > 0:
-            candidates = np.random.permutation(prods)
-            for p in candidates:
-                step = np.random.randint(0, budget + 1)  # high is exclusive. need to ensure loop terminates
-                action[p] += step
-                budget -= step
-                if budget == 0:
-                    break
-        return action
 
     def _get_action(self, dist, prods, num_slots):
         action = {}
@@ -41,13 +25,17 @@ class DemandMatchRecommender(BaseRecommender):
             action[p] = 0
 
         budget = num_slots
-        while budget > 0:
-            for i, prob in enumerate(dist):
-                q = int(np.round(num_slots * prob))
-                action[self.idx2prod[i]] += q
-                budget -= q
-                if budget == 0:
-                    break
+        for i, prob in enumerate(dist):
+            q = int(np.round(num_slots * prob))
+            if budget - q < 0:
+                continue
+            action[self.idx2prod[i]] += q
+            budget -= q
+
+
+        if budget > 0:
+            idx = np.random.randint(0, len(prods))
+            action[self.idx2prod[idx]] += budget
         return action
 
 
@@ -56,15 +44,18 @@ class DemandMatchRecommender(BaseRecommender):
 
     def __call__(self, state, *args, **kwargs):
         values = self.mem.get_value()
+        print(values)
         prods = list(self.prod2idx.keys())
         if values.sum() == 0.0:
             action = self.get_random(state, prods)
         else:
             dist = values / values.sum()
-            action = self._get_action(dist,prods,num_slots=state.n_slots)
+            action = self._get_action(dist, prods, num_slots=state.n_slots)
 
             n_allocated = int(np.sum(list(action.values())))
-
+            # TODO: sometimes there's a bug here
+            if n_allocated != state.n_slots:
+                ax = self._get_action(dist, prods, num_slots=state.n_slots)
             assert n_allocated == state.n_slots, f"allocation: {n_allocated}, max: {state.n_slots}"
         return action
 

@@ -18,23 +18,23 @@ store:
     deli:
       displays:
         cooler:
-          n_slots: 10
+          n_slots: 20
           max_per_slot: 5
     dairy:
       displays:
         cooler:
-          n_slots: 10
+          n_slots: 20
           max_per_slot: 5
     entrance:
       displays:
         cooler:
-          n_slots: 10
+          n_slots: 20
           max_per_slot: 5
       is_entrance: True
 params:
   products:
     "coca_cola_20oz_bottle":
-      weight: 3.0
+      weight: 2.0
       price: 1.99
     "dr_pepper_20oz_bottle":
       weight: 2.0
@@ -46,7 +46,7 @@ params:
       weight: 1.0
       price: 1.99
     "Monster_16oz_can":
-      weight: 5.0
+      weight: 2.5
       price: 2.99
   price: -1.1
   sigma: 0.5
