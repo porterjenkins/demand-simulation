@@ -1,5 +1,6 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+import argparse
 
 from sim.simulator import Simulator
 from sim import cfg
@@ -33,4 +34,7 @@ def main(n_runs):
     print(ids)
 
 if __name__ == "__main__":
-    main(n_runs=5)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n-runs', type=int, default=None, help='number of runs')
+    args = parser.parse_args()
+    main(n_runs=args.n_runs)
