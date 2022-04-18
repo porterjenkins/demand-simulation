@@ -73,7 +73,6 @@ class Simulator(gym.Env):
             self.store.print_state()
             self.traffic.append(self.store.get_n_agents())
             self.ts.append(self.curr_time)
-
             # existing agents make choices
             rewards.append(self.store.shop_agents(self.verbose))
 

@@ -18,18 +18,18 @@ store:
     deli:
       displays:
         cooler:
-          n_slots: 20
-          max_per_slot: 5
+          n_slots: 10
+          max_per_slot: 2
     dairy:
       displays:
         cooler:
-          n_slots: 20
-          max_per_slot: 5
+          n_slots: 10
+          max_per_slot: 2
     entrance:
       displays:
         cooler:
-          n_slots: 20
-          max_per_slot: 5
+          n_slots: 10
+          max_per_slot: 2
       is_entrance: True
 params:
   products:
@@ -48,7 +48,7 @@ params:
     "Monster_16oz_can":
       weight: 5.0
       price: 2.99
-  no_choice: 1.0
+  no_choice: 4.0
   price: -1.1
   sigma: 0.5
-  choice: 0.2
+  choice: 0.9
