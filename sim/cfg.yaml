@@ -1,6 +1,6 @@
 time:
   start: 2021-05-01 12:00:00
-  end: 2021-05-31 23:00:00
+  end: 2021-10-31 23:00:00
   timedelta:
     unit: hour # assume hours for now
     resolution: 1
@@ -19,36 +19,36 @@ store:
       displays:
         cooler:
           n_slots: 10
-          max_per_slot: 2
+          max_per_slot: 5
     dairy:
       displays:
         cooler:
           n_slots: 10
-          max_per_slot: 2
+          max_per_slot: 5
     entrance:
       displays:
         cooler:
           n_slots: 10
-          max_per_slot: 2
+          max_per_slot: 5
       is_entrance: True
 params:
   products:
     "coca_cola_20oz_bottle":
-      weight: 0.0
+      weight: 2.0
       price: 1.99
     "dr_pepper_20oz_bottle":
-      weight: 0.0
+      weight: 1.0
       price: .99
     "diet_coke_20oz_bottle":
-      weight: 0.0
+      weight: 1.0
       price: 1.99
     "sprite_20oz_bottle":
-      weight: 0.0
+      weight: 1.0
       price: 1.99
     "Monster_16oz_can":
-      weight: 5.0
+      weight: 4.0
       price: 2.99
-  no_choice: 4.0
+  no_choice: 3.0
   price: -1.1
   sigma: 0.5
   choice: 0.9

@@ -98,7 +98,7 @@ class Store(object):
             bar = "".join(["X"]*cnt)
             print(f"\t{reg}: {bar}")
 
-        print(f"\ttotal recommenders: {n_agents}")
+        print(f"\ttotal agents: {n_agents}")
         print("--" * 10)
 
 
